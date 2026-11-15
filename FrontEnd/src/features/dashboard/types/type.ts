@@ -35,3 +35,7 @@ export const toneClasses: Record<Cohort["tone"], string> = {
   teal: "bg-[linear-gradient(115deg,#0D6684,#328CAC)]",
   slate: "bg-[linear-gradient(115deg,#28465D,#54758B)]",
 };
+
+export interface DashboardBannerProps {
+  onCreate: () => void;
+}
