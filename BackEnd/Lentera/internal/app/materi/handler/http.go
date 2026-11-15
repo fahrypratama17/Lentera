@@ -16,6 +16,14 @@ func writeOK(c *gin.Context, data any) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": data})
 }
 
+func writeCreated(c *gin.Context, data any) {
+	c.JSON(http.StatusCreated, gin.H{"success": true, "data": data})
+}
+
+func writeNoContent(c *gin.Context) {
+	c.Status(http.StatusNoContent)
+}
+
 func writeError(c *gin.Context, err error) {
 	status, code := http.StatusInternalServerError, "INTERNAL"
 

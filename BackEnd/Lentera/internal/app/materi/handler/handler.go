@@ -14,7 +14,7 @@ type MaterialHandler struct {
 	svc contract.MaterialService
 }
 
-func NewMaterialHandler(svc contract.MaterialService) *MaterialHandler {
+func New(svc contract.MaterialService) *MaterialHandler {
 	return &MaterialHandler{svc: svc}
 }
 
@@ -82,6 +82,115 @@ func (h *MaterialHandler) MySummary(c *gin.Context) {
 	}
 
 	res, err := h.svc.MySummary(c.Request.Context(), userID, cohortID)
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+	writeOK(c, res)
+}
+
+// ───────────────── CRUD materi (Mentor) ─────────────────
+
+// POST /cohorts/:cohortId/materials
+func (h *MaterialHandler) Create(c *gin.Context) {
+	userID, ok := currentUser(c)
+	if !ok {
+		return
+	}
+	cohortID, err := paramID(c, "cohortId")
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+
+	var req dto.CreateMaterialRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		writeError(c, fmt.Errorf("%w: %v", response.ErrBadRequest, err))
+		return
+	}
+
+	res, err := h.svc.CreateMaterial(c.Request.Context(), userID, cohortID, req)
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+	writeCreated(c, res)
+}
+
+// PATCH /cohorts/:cohortId/materials/:materialId
+func (h *MaterialHandler) Update(c *gin.Context) {
+	userID, ok := currentUser(c)
+	if !ok {
+		return
+	}
+	cohortID, err := paramID(c, "cohortId")
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+	materialID, err := paramID(c, "materialId")
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+
+	var req dto.UpdateMaterialRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		writeError(c, fmt.Errorf("%w: %v", response.ErrBadRequest, err))
+		return
+	}
+
+	res, err := h.svc.UpdateMaterial(c.Request.Context(), userID, cohortID, materialID, req)
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+	writeOK(c, res)
+}
+
+// DELETE /cohorts/:cohortId/materials/:materialId
+func (h *MaterialHandler) Delete(c *gin.Context) {
+	userID, ok := currentUser(c)
+	if !ok {
+		return
+	}
+	cohortID, err := paramID(c, "cohortId")
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+	materialID, err := paramID(c, "materialId")
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+
+	if err := h.svc.DeleteMaterial(c.Request.Context(), userID, cohortID, materialID); err != nil {
+		writeError(c, err)
+		return
+	}
+	writeNoContent(c)
+}
+
+// PUT /cohorts/:cohortId/materials/order
+func (h *MaterialHandler) Reorder(c *gin.Context) {
+	userID, ok := currentUser(c)
+	if !ok {
+		return
+	}
+	cohortID, err := paramID(c, "cohortId")
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+
+	var req dto.ReorderMaterialsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		writeError(c, fmt.Errorf("%w: %v", response.ErrBadRequest, err))
+		return
+	}
+
+	res, err := h.svc.ReorderMaterials(c.Request.Context(), userID, cohortID, req)
 	if err != nil {
 		writeError(c, err)
 		return

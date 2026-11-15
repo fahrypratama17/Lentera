@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/contract"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/dto"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/entity"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
@@ -17,6 +18,8 @@ type fakeRepo struct {
 	roles      map[[2]uint]string // key: [cohortID, userID]
 	materials  []entity.Material
 	progresses []entity.Progress
+	lastUpdate map[string]any // dicatat supaya test bisa cek field apa yang dikirim ke DB
+
 }
 
 func (f *fakeRepo) GetActiveRole(_ context.Context, cohortID, userID uint) (string, error) {
@@ -76,6 +79,46 @@ func (f *fakeRepo) GetUserNames(_ context.Context, ids []uint) (map[uint]string,
 	return out, nil
 }
 
+func (f *fakeRepo) NextPosition(_ context.Context, cohortID uint) (int, error) {
+	maxPos := 0
+	for _, m := range f.materials {
+		if m.CohortID == cohortID && m.Position > maxPos {
+			maxPos = m.Position
+		}
+	}
+	return maxPos + 1, nil
+}
+
+func (f *fakeRepo) CreateMaterial(_ context.Context, m *entity.Material) error {
+	m.ID = uint(100 + len(f.materials))
+	f.materials = append(f.materials, *m)
+	return nil
+}
+
+func (f *fakeRepo) UpdateMaterial(_ context.Context, cohortID, materialID uint, fields map[string]any) error {
+	for _, m := range f.materials {
+		if m.ID == materialID && m.CohortID == cohortID {
+			f.lastUpdate = fields
+			return nil
+		}
+	}
+	return response.ErrNotFound
+}
+
+func (f *fakeRepo) DeleteMaterial(_ context.Context, cohortID, materialID uint) error {
+	for i, m := range f.materials {
+		if m.ID == materialID && m.CohortID == cohortID {
+			f.materials = append(f.materials[:i], f.materials[i+1:]...)
+			return nil
+		}
+	}
+	return response.ErrNotFound
+}
+
+func (f *fakeRepo) ReorderMaterials(context.Context, uint, []uint) error {
+	return nil
+}
+
 // ───────────────── fixture ─────────────────
 // cohort 1: user 1 = mentor, user 2 & 3 = member. user 9 bukan anggota.
 // materi 10 (lewat deadline), 11 (deadline besok), 12 (lewat deadline), 20 milik cohort 2.
@@ -113,7 +156,7 @@ func newTestService() (*materialService, *fakeRepo) {
 			{ID: 4, CohortID: 1, MaterialID: 10, UserID: 3, Status: entity.StatusCompleted}, // milik member lain
 		},
 	}
-	svc := &materialService{repo: repo, now: func() time.Time { return fixedNow }}
+	svc := &materialService{repo: repo, rt: contract.NoopBroadcaster{}, now: func() time.Time { return fixedNow }}
 	return svc, repo
 }
 
@@ -308,5 +351,250 @@ func TestMySummary_Ditolak(t *testing.T) {
 				t.Fatalf("want ErrForbidden, got %v", err)
 			}
 		})
+	}
+}
+
+// ───────────────── fake broadcaster: catat event yang dikirim ─────────────────
+
+type sentEvent struct{ room, event string }
+
+type fakeBroadcaster struct{ sent []sentEvent }
+
+func (b *fakeBroadcaster) Broadcast(room, event string, _ any) {
+	b.sent = append(b.sent, sentEvent{room, event})
+}
+
+func (b *fakeBroadcaster) has(room, event string) bool {
+	for _, e := range b.sent {
+		if e.room == room && e.event == event {
+			return true
+		}
+	}
+	return false
+}
+
+func newCRUDService() (*materialService, *fakeRepo, *fakeBroadcaster) {
+	svc, repo := newTestService()
+	bc := &fakeBroadcaster{}
+	svc.rt = bc
+	return svc, repo, bc
+}
+
+func strPtr(s string) *string { return &s }
+
+// ───────────────── CreateMaterial ─────────────────
+
+func TestCreateMaterial_Mentor(t *testing.T) {
+	svc, _, bc := newCRUDService()
+	wib := time.FixedZone("WIB", 7*3600)
+	deadline := time.Date(2026, 11, 20, 23, 59, 0, 0, wib)
+
+	got, err := svc.CreateMaterial(context.Background(), 1, 1, dto.CreateMaterialRequest{
+		Title:    "  Pengenalan Gin  ",
+		Guide:    "baca docs routing",
+		Deadline: &deadline,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got.Position != 4 {
+		t.Errorf("materi baru harus di urutan terakhir (4), got %d", got.Position)
+	}
+	if got.Title != "Pengenalan Gin" {
+		t.Errorf("title harus di-trim, got %q", got.Title)
+	}
+	if got.References == nil {
+		t.Error("references harus [] bukan nil")
+	}
+	if got.Deadline == nil || got.Deadline.Location() != time.UTC || !got.Deadline.Equal(deadline) {
+		t.Errorf("deadline harus disimpan UTC dengan waktu yang sama, got %v", got.Deadline)
+	}
+	if got.MyProgress != nil {
+		t.Error("response untuk mentor tidak boleh berisi my_progress")
+	}
+	if !bc.has("cohort:1", "material.created") {
+		t.Error("harus broadcast material.created ke room cohort")
+	}
+	if !bc.has("cohort:1:mentors", "dashboard.updated") {
+		t.Error("harus broadcast dashboard.updated ke room mentor")
+	}
+}
+
+func TestCreateMaterial_Ditolak(t *testing.T) {
+	tests := []struct {
+		name    string
+		userID  uint
+		req     dto.CreateMaterialRequest
+		wantErr error
+	}{
+		{name: "member tidak boleh buat materi", userID: 2, req: dto.CreateMaterialRequest{Title: "Gin", Guide: "x"}, wantErr: response.ErrForbidden},
+		{name: "bukan anggota", userID: 9, req: dto.CreateMaterialRequest{Title: "Gin", Guide: "x"}, wantErr: response.ErrForbidden},
+		{name: "title cuma spasi + 2 huruf", userID: 1, req: dto.CreateMaterialRequest{Title: "   ab ", Guide: "x"}, wantErr: response.ErrBadRequest},
+		{name: "guide cuma spasi", userID: 1, req: dto.CreateMaterialRequest{Title: "Gin", Guide: "   "}, wantErr: response.ErrBadRequest},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc, repo, bc := newCRUDService()
+			before := len(repo.materials)
+
+			_, err := svc.CreateMaterial(context.Background(), tt.userID, 1, tt.req)
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("want %v, got %v", tt.wantErr, err)
+			}
+			if len(repo.materials) != before {
+				t.Error("materi tidak boleh tersimpan kalau ditolak")
+			}
+			if len(bc.sent) != 0 {
+				t.Errorf("tidak boleh ada broadcast kalau gagal, got %v", bc.sent)
+			}
+		})
+	}
+}
+
+// ───────────────── UpdateMaterial ─────────────────
+
+func TestUpdateMaterial_HapusDeadline(t *testing.T) {
+	svc, repo, bc := newCRUDService()
+
+	_, err := svc.UpdateMaterial(context.Background(), 1, 1, 10, dto.UpdateMaterialRequest{
+		Deadline: dto.NullableTime{Set: true, Value: nil},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	v, ok := repo.lastUpdate["deadline"]
+	if !ok || v != nil {
+		t.Fatalf("deadline:null harus jadi field deadline=nil, got ok=%v v=%v", ok, v)
+	}
+	if !bc.has("cohort:1", "material.updated") {
+		t.Error("harus broadcast material.updated")
+	}
+}
+
+func TestUpdateMaterial_FieldYangTidakDikirimTidakDiubah(t *testing.T) {
+	svc, repo, _ := newCRUDService()
+
+	_, err := svc.UpdateMaterial(context.Background(), 1, 1, 10, dto.UpdateMaterialRequest{
+		Title: strPtr("  Gin Lanjutan "),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if repo.lastUpdate["title"] != "Gin Lanjutan" {
+		t.Errorf("title harus di-trim, got %v", repo.lastUpdate["title"])
+	}
+	for _, key := range []string{"deadline", "guide", "references"} {
+		if _, ok := repo.lastUpdate[key]; ok {
+			t.Errorf("field %q tidak dikirim, jadi tidak boleh ikut di-update", key)
+		}
+	}
+}
+
+func TestUpdateMaterial_Ditolak(t *testing.T) {
+	tests := []struct {
+		name       string
+		userID     uint
+		materialID uint
+		req        dto.UpdateMaterialRequest
+		wantErr    error
+	}{
+		{name: "tidak ada field", userID: 1, materialID: 10, req: dto.UpdateMaterialRequest{}, wantErr: response.ErrBadRequest},
+		{name: "title terlalu pendek", userID: 1, materialID: 10, req: dto.UpdateMaterialRequest{Title: strPtr(" a ")}, wantErr: response.ErrBadRequest},
+		{name: "member tidak boleh edit", userID: 2, materialID: 10, req: dto.UpdateMaterialRequest{Title: strPtr("Gin 2")}, wantErr: response.ErrForbidden},
+		{name: "materi milik cohort lain", userID: 1, materialID: 20, req: dto.UpdateMaterialRequest{Title: strPtr("Gin 2")}, wantErr: response.ErrNotFound},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc, _, bc := newCRUDService()
+			_, err := svc.UpdateMaterial(context.Background(), tt.userID, 1, tt.materialID, tt.req)
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("want %v, got %v", tt.wantErr, err)
+			}
+			if len(bc.sent) != 0 {
+				t.Errorf("tidak boleh ada broadcast kalau gagal, got %v", bc.sent)
+			}
+		})
+	}
+}
+
+// ───────────────── DeleteMaterial ─────────────────
+
+func TestDeleteMaterial_Mentor(t *testing.T) {
+	svc, repo, bc := newCRUDService()
+
+	if err := svc.DeleteMaterial(context.Background(), 1, 1, 10); err != nil {
+		t.Fatal(err)
+	}
+	for _, m := range repo.materials {
+		if m.ID == 10 {
+			t.Fatal("materi 10 harus terhapus")
+		}
+	}
+	if !bc.has("cohort:1", "material.deleted") {
+		t.Error("harus broadcast material.deleted")
+	}
+	if !bc.has("cohort:1:mentors", "dashboard.updated") {
+		t.Error("hapus materi mengubah dashboard, harus broadcast dashboard.updated")
+	}
+}
+
+func TestDeleteMaterial_Ditolak(t *testing.T) {
+	tests := []struct {
+		name       string
+		userID     uint
+		materialID uint
+		wantErr    error
+	}{
+		{name: "member tidak boleh hapus", userID: 2, materialID: 10, wantErr: response.ErrForbidden},
+		{name: "materi milik cohort lain", userID: 1, materialID: 20, wantErr: response.ErrNotFound},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc, repo, bc := newCRUDService()
+			before := len(repo.materials)
+
+			err := svc.DeleteMaterial(context.Background(), tt.userID, 1, tt.materialID)
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("want %v, got %v", tt.wantErr, err)
+			}
+			if len(repo.materials) != before {
+				t.Error("tidak boleh ada materi terhapus kalau ditolak")
+			}
+			if len(bc.sent) != 0 {
+				t.Errorf("tidak boleh ada broadcast, got %v", bc.sent)
+			}
+		})
+	}
+}
+
+// ───────────────── ReorderMaterials ─────────────────
+
+func TestReorderMaterials_Mentor(t *testing.T) {
+	svc, _, bc := newCRUDService()
+
+	got, err := svc.ReorderMaterials(context.Background(), 1, 1, dto.ReorderMaterialsRequest{MaterialIDs: []uint{12, 10, 11}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 3 {
+		t.Errorf("want 3 materi dikembalikan, got %d", len(got))
+	}
+	if !bc.has("cohort:1", "material.reordered") {
+		t.Error("harus broadcast material.reordered")
+	}
+}
+
+func TestReorderMaterials_MemberDitolak(t *testing.T) {
+	svc, _, bc := newCRUDService()
+
+	_, err := svc.ReorderMaterials(context.Background(), 2, 1, dto.ReorderMaterialsRequest{MaterialIDs: []uint{12, 10, 11}})
+	if !errors.Is(err, response.ErrForbidden) {
+		t.Fatalf("want ErrForbidden, got %v", err)
+	}
+	if len(bc.sent) != 0 {
+		t.Errorf("tidak boleh ada broadcast, got %v", bc.sent)
 	}
 }
