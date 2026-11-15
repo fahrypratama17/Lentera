@@ -1,8 +1,7 @@
 package database
 
 import (
-	featureAEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/entity"
-	featureBEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/entity"
+	featureBEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/entity"
 	userEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
 
 	"gorm.io/gorm"
@@ -11,8 +10,7 @@ import (
 func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&userEntity.User{},
-		&featureAEntity.FeatureA{},
-		&featureBEntity.FeatureB{},
+		&featureBEntity.Material{},
 		// TODO: daftarin entity baru di sini
 	)
 }
