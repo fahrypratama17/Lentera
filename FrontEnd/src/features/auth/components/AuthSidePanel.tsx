@@ -2,11 +2,7 @@ import { ArrowRight, BookOpen, Lightbulb, UsersRound } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import Image from "next/image";
 import AuthBackground from "@/features/auth/components/AuthBackground";
-
-interface AuthSidePanelProps {
-  isRegister: boolean;
-  onSwitch: () => void;
-}
+import { AuthSidePanelProps } from "@/features/auth/types/type";
 
 const AuthSidePanel = ({ isRegister, onSwitch }: AuthSidePanelProps) => {
   return (

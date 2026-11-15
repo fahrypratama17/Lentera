@@ -5,20 +5,11 @@ import { useRouter } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
-type SignMode = "signIn" | "signUp";
-
-interface SignFormValues {
-  userName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface ApiResponse {
-  message?: string;
-  error?: string;
-}
+import {
+  ApiResponse,
+  SignFormValues,
+  SignMode,
+} from "@/features/auth/types/type";
 
 const API_URL = {
   signIn: "/api/auth/login",

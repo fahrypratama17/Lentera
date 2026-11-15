@@ -4,10 +4,7 @@ import { FieldGroup } from "@/shared/components/ui/field";
 import AuthHeader from "./AuthHeader";
 import AuthInput from "./AuthInput";
 import { useSignForm } from "../hooks/useSignForm";
-
-interface RegisterFormProps {
-  onSwitch: () => void;
-}
+import { RegisterFormProps } from "@/features/auth/types/type";
 
 const RegisterForm = ({ onSwitch }: RegisterFormProps) => {
   const { form, onSubmit, isPending, error } = useSignForm("signUp");

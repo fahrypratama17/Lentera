@@ -6,10 +6,7 @@ import { FieldGroup } from "@/shared/components/ui/field";
 import AuthHeader from "./AuthHeader";
 import AuthInput from "./AuthInput";
 import { useSignForm } from "@/features/auth/hooks/useSignForm";
-
-interface LoginFormProps {
-  onSwitch: () => void;
-}
+import { LoginFormProps } from "@/features/auth/types/type";
 
 const LoginForm = ({ onSwitch }: LoginFormProps) => {
   const { form, onSubmit, isPending, error } = useSignForm("signIn");

@@ -1,26 +1,11 @@
 "use client";
 
 import { useId, useState } from "react";
-import {
-  Controller,
-  type Control,
-  type FieldValues,
-  type Path,
-} from "react-hook-form";
+import { Controller, type FieldValues } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
-
 import { Field, FieldLabel, FieldError } from "@/shared/components/ui/field";
 import { Button } from "@/shared/components/ui/button";
-
-interface AuthInputProps<T extends FieldValues> {
-  control: Control<T>;
-  name: Path<T>;
-  label: string;
-  placeholder?: string;
-  type?: "text" | "email" | "password";
-  autoComplete?: string;
-  disabled?: boolean;
-}
+import { AuthInputProps } from "@/features/auth/types/type";
 
 function AuthInput<T extends FieldValues>({
   control,

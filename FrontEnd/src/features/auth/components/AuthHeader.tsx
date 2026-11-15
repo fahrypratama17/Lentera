@@ -1,7 +1,4 @@
-interface AuthHeaderProps {
-  title: string;
-  description: string;
-}
+import { AuthHeaderProps } from "@/features/auth/types/type";
 
 const AuthHeader = ({ title, description }: AuthHeaderProps) => {
   return (
