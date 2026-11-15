@@ -1,10 +1,6 @@
 import { assertCanStart, assertCanSubmit, delay } from "./shared";
 import type { SubmitTaskValues, TaskItem } from "../types/type";
 
-/**
- * Aksi perubahan status tugas. Berjalan di klien (optimistic-friendly),
- * tetapi seluruh aturan bisnis tetap di sini — bukan di komponen.
- */
 
 export const startTask = async (task: TaskItem): Promise<TaskItem> => {
   assertCanStart(task);

@@ -18,10 +18,7 @@ import type {
 
 export const TASKS_PER_PAGE = 6;
 
-/**
- * Satu-satunya tempat state & orkestrasi untuk halaman Tugas.
- * Komponen presentasional menerima hasilnya lewat props dari container.
- */
+
 export function useTaskController(initialTasks: TaskItem[]) {
   const [tasks, setTasks] = useState<TaskItem[]>(() => sortTasks(initialTasks));
 
@@ -150,24 +147,20 @@ export function useTaskController(initialTasks: TaskItem[]) {
   );
 
   return {
-    /* data */
     filteredTasks,
     paginatedTasks,
     summary,
     cohortOptions,
-    /* filter */
     filter,
     cohortId,
     search,
     page: currentPage,
     totalPages,
     totalItems,
-    /* dialog */
     selectedTask,
     dialogOpen: selectedTask !== null,
     submitting,
     error,
-    /* aksi */
     setFilter,
     setCohortId,
     setSearch,

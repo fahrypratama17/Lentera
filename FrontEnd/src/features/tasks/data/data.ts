@@ -1,16 +1,10 @@
 import type { ReviewDecision, TaskStatus } from "../types/type";
 
-/**
- * Seed mentah — merepresentasikan isi tabel `materials` + `progress`
- * setelah di-join. `deadlineOffset` dihitung relatif terhadap hari ini
- * agar demo selalu punya kombinasi tugas terlambat / mendesak / jauh.
- */
 export interface TaskSeed {
   cohortId: string;
   materialIndex: number;
   materialTitle: string;
   position: number;
-  /** offset hari dari hari ini; negatif = sudah lewat */
   deadlineOffset: number | null;
   status: TaskStatus;
   submissionContent: string | null;

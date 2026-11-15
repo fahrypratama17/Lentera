@@ -6,11 +6,7 @@ import { sortTasks } from "../utils/task";
 import { delay, isoFromNow } from "./shared";
 import type { TaskItem } from "../types/type";
 
-/**
- * Menggabungkan seed `materials` + `progress` menjadi baris tugas siap tampil.
- * Hanya cohort dengan role `member` yang dianggap tugas milik pengguna,
- * karena Mentor tidak mengerjakan materi (PRD bagian 4).
- */
+
 const buildTasks = (): TaskItem[] =>
   taskSeeds.flatMap((seed) => {
     const cohort = mockCohorts.find((item) => item.id === seed.cohortId);
@@ -49,7 +45,6 @@ const buildTasks = (): TaskItem[] =>
     ];
   });
 
-/** Server: daftar tugas milik pengguna pada cohort tempat ia menjadi Member. */
 export const getMyTasks = cache(async (): Promise<TaskItem[]> => {
   await delay();
   return sortTasks(buildTasks());

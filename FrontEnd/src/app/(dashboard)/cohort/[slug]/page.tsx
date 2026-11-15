@@ -1,15 +1,16 @@
-import CohortDetailLayoutContainer from "@/features/member-cohort/[slug]/container/CohortDetailLayoutContainer";
+import { Suspense } from "react";
 
-export default function CohortDetailLayout({
-  children,
+import CohortDetailRedirectContainer from "@/features/member-cohort/[slug]/container/CohortDetailRedirectContainer";
+import CohortDetailSkeleton from "@/features/member-cohort/[slug]/components/CohortDetailSkeleton";
+
+export default function CohortDetailPage({
   params,
 }: {
-  children: React.ReactNode;
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <CohortDetailLayoutContainer params={params}>
-      {children}
-    </CohortDetailLayoutContainer>
+    <Suspense fallback={<CohortDetailSkeleton />}>
+      <CohortDetailRedirectContainer params={params} />
+    </Suspense>
   );
 }

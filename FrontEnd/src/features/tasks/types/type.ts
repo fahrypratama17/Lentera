@@ -1,13 +1,11 @@
 import type { CohortRole, CohortTone } from "@/features/dashboard/types/type";
 
-/** Selaras dengan enum `progress_status` pada ERD. */
 export type TaskStatus =
   | "not_started"
   | "in_progress"
   | "submitted"
   | "completed";
 
-/** Selaras dengan enum `review_decision` pada ERD. */
 export type ReviewDecision = "approved" | "revision";
 
 export type TaskFilter =
@@ -18,47 +16,29 @@ export type TaskFilter =
   | "completed"
   | "overdue";
 
-/**
- * Satu baris tabel `progress` yang di-join dengan `materials` + `cohorts`.
- * Nama field mengikuti kolom ERD agar mudah dipetakan ke API nanti.
- */
 export interface TaskItem {
-  /** progress.id */
   id: string;
   cohortId: string;
   cohortTitle: string;
   cohortTone: CohortTone;
   materialId: string;
   materialTitle: string;
-  /** materials.position */
   position: number;
-  /** materials.deadline */
   deadline: string | null;
 
-  /** progress.status */
   status: TaskStatus;
-  /** progress.submission_content */
   submissionContent: string | null;
-  /** progress.submission_url */
   submissionUrl: string | null;
-  /** progress.submitted_at */
   submittedAt: string | null;
 
-  /** progress.review_decision */
   reviewDecision: ReviewDecision | null;
-  /** progress.review_note */
   reviewNote: string | null;
-  /** progress.reviewer_id → users.name */
   reviewerName: string | null;
-  /** progress.reviewed_at */
   reviewedAt: string | null;
 
-  /** progress.started_at */
   startedAt: string | null;
-  /** progress.completed_at */
   completedAt: string | null;
 
-  /** memberships.role pada cohort terkait */
   role: CohortRole;
 }
 
@@ -87,7 +67,6 @@ export interface TaskCohortOption {
   value: string;
 }
 
-/* ── kontrak props komponen ── */
 
 export interface TaskCardProps {
   task: TaskItem;
@@ -135,7 +114,6 @@ export interface TaskDialogProps {
   onStart: () => void;
 }
 
-/* ── konfigurasi tampilan ── */
 
 export const TASK_FILTERS: TaskFilterOption[] = [
   { label: "Semua", value: "all" },

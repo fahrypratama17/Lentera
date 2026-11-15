@@ -1,10 +1,12 @@
-import CohortDetailRedirectContainer from "@/features/member-cohort/[slug]/container/CohortDetailRedirectContainer";
+import type { Metadata } from "next";
 
-export default async function CohortDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  return <CohortDetailRedirectContainer slug={slug} />;
+import CohortContainer from "@/features/member-cohort/container/CohortContainer";
+
+export const metadata: Metadata = {
+  title: "Kelas Saya | StudyTrack",
+  description: "Semua kelas yang kamu ikuti dan kelola.",
+};
+
+export default function CohortPage() {
+  return <CohortContainer />;
 }

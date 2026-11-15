@@ -8,10 +8,6 @@ const DAY = 86_400_000;
 export const isoFromNow = (offsetDays: number) =>
   new Date(Date.now() + offsetDays * DAY).toISOString();
 
-/**
- * Satu-satunya tempat aturan transisi status ditulis.
- * Dipakai bersama oleh service server (baca) dan aksi klien (ubah).
- */
 
 export const assertCanStart = (task: TaskItem) => {
   if (task.status !== "not_started") {

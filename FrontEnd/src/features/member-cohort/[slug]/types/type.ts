@@ -17,7 +17,7 @@ export type CohortDetail = CohortItem & {
 };
 
 export interface MaterialWithProgress {
-  id: string;
+  id: string | number;
   position: number;
   title: string;
   deadline: string | null;

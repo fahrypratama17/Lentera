@@ -3,7 +3,15 @@ import { notFound, redirect } from "next/navigation";
 import { getCohortDetail } from "../services/cohortDetailService";
 import { buildCohortSlug, parseCohortSlug } from "../../utils/slugify";
 
-const CohortDetailRedirectContainer = async ({ slug }: { slug: string }) => {
+interface CohortDetailRedirectContainerProps {
+  params: Promise<{ slug: string }>;
+}
+
+const CohortDetailRedirectContainer = async ({
+  params,
+}: CohortDetailRedirectContainerProps) => {
+  const { slug } = await params;
+
   const key = parseCohortSlug(slug);
   if (!key) notFound();
 

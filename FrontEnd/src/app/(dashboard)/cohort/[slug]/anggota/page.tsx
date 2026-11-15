@@ -1,11 +1,16 @@
-import CohortMemberContainer from "@/features/member-cohort/[slug]/container/CohortMemberContainer";
+import { Suspense } from "react";
 
-export default async function CohortMemberPage({
+import CohortMemberContainer from "@/features/member-cohort/[slug]/container/CohortMemberContainer";
+import MemberSkeleton from "@/features/member-cohort/[slug]/components/MemberSkeleton";
+
+export default function CohortMemberPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-
-  return <CohortMemberContainer slug={slug} />;
+  return (
+    <Suspense fallback={<MemberSkeleton />}>
+      <CohortMemberContainer params={params} />
+    </Suspense>
+  );
 }

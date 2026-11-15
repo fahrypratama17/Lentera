@@ -2,10 +2,6 @@ import type { TaskFilter, TaskItem, TaskSummary } from "../types/type";
 
 const DAY = 86_400_000;
 
-/**
- * Terlambat = belum selesai & deadline sudah lewat.
- * Deadline hanya penanda keterlambatan, bukan penghalang pengumpulan (PRD M5).
- */
 export const isOverdue = (task: TaskItem, now: number = Date.now()) =>
   task.deadline !== null &&
   (task.status === "not_started" || task.status === "in_progress") &&
@@ -32,7 +28,6 @@ export const matchesSearch = (task: TaskItem, keyword: string) => {
     .includes(query);
 };
 
-/** Ringkasan selalu menghitung seluruh tugas, bukan hasil filter (PRD M7). */
 export const summarize = (
   tasks: TaskItem[],
   now: number = Date.now(),
@@ -51,7 +46,6 @@ export const summarize = (
   };
 };
 
-/** Deadline terdekat lebih dulu; tugas tanpa deadline diletakkan di akhir. */
 export const sortTasks = (tasks: TaskItem[]) =>
   [...tasks].sort((a, b) => {
     if (a.deadline === null && b.deadline === null) {
