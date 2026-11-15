@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { WaveBg } from "./wave";
+import { HeroWave } from "@/features/home/components/HeroWave";
 import Link from "next/link";
 import { useHeroReveal } from "@/features/home/hooks/useHeroReveal";
 import Image from "next/image";
@@ -14,51 +14,71 @@ export function Hero() {
     <section
       ref={heroRef}
       id="top"
-      className="bg-background relative isolate mx-auto min-h-screen overflow-hidden px-4 pt-40 pb-28 md:pt-32"
+      className="bg-background relative isolate mx-auto min-h-screen overflow-hidden px-4 pt-40 pb-20 md:pt-32"
     >
-      {/* Hero Content */}
       <div ref={contentRef} className="flex items-center justify-center">
-        <div className="bg-secondary-light relative z-10 container flex w-full flex-col items-center gap-6 overflow-hidden rounded-3xl px-4 py-30 text-center">
-          <h1 className="text-primary-text max-w-[30ch] text-[clamp(2.2rem,5.2vw,5rem)] leading-tight font-extrabold tracking-normal text-balance">
-            Materi, progres, dan review. Semua di satu tempat.
-          </h1>
+        <div className="bg-secondary-light relative z-10 container flex min-h-162.5 w-full flex-col items-center justify-center overflow-hidden rounded-[2rem] px-6 py-28 text-center md:px-12">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-40"
+            style={{
+              backgroundImage: "radial-gradient(#85B8D0 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+              maskImage:
+                "linear-gradient(to bottom, transparent, black 30%, transparent 90%)",
+            }}
+          />
 
-          <p className="text-secondary-text max-w-[70ch] text-[clamp(0.9375rem,1.5vw,1.0625rem)] leading-relaxed text-pretty">
-            Mentor langsung tahu siapa yang belum mulai dan siapa yang menunggu
-            review. Anggota tahu persis apa yang dikerjakan berikutnya. Tanpa
-            tanya-tanya di grup chat.
-          </p>
+          <div className="relative z-20 flex flex-col items-center gap-7">
+            <h1 className="text-primary-text max-w-[22ch] text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[1.08] font-extrabold tracking-tight text-balance">
+              Belajar bareng,
+              <br />
+              <span className="text-secondary">berkembang lebih jauh.</span>
+            </h1>
 
-          <div className="mt-1.5 flex flex-wrap justify-center gap-3">
-            <Button
-              size="lg"
-              className="group bg-primary hover:text-primary-text h-11 rounded-full px-6 text-[15px] font-semibold text-white hover:bg-white"
-            >
-              <Link href="/auth">
-                Mulai
-                <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Button>
+            <p className="text-secondary-text max-w-[62ch] text-base leading-relaxed text-pretty md:text-lg">
+              Satu ruang untuk berbagi materi, menyelesaikan tugas, dan memantau
+              progres belajar. Bikin kolaborasi mentor dan anggota jadi lebih
+              mudah, terarah, dan menyenangkan.
+            </p>
 
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-border bg-background text-primary-text hover:bg-primary h-11 rounded-full px-6 text-[15px] font-semibold hover:text-white"
-            >
-              <Link href="#how-to">Jelajahi</Link>
-            </Button>
+            <div className="relative z-30 mt-2 grid w-full max-w-90 grid-cols-1 gap-3 sm:max-w-90 sm:grid-cols-2">
+              <Button
+                size="lg"
+                className="group bg-primary shadow-primary/15 hover:bg-secondary h-12 w-full cursor-pointer rounded-full px-5 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <Link
+                  href="/auth"
+                  className="flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  Mulai Belajar
+                  <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-primary/15 text-primary-text hover:bg-primary h-12 w-full cursor-pointer rounded-full bg-white/90 px-5 text-sm font-semibold transition-colors hover:-translate-y-1 hover:text-white"
+              >
+                <Link
+                  href="#how-to"
+                  className="flex items-center justify-center whitespace-nowrap"
+                >
+                  Jelajahi Fitur
+                </Link>
+              </Button>
+            </div>
           </div>
 
-          <WaveBg />
+          <HeroWave />
         </div>
       </div>
 
-      {/* Fullscreen split curtain */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-50"
+        className="pointer-events-none fixed inset-0 z-100"
       >
-        {/* Left half */}
         <div
           ref={leftRef}
           className="absolute inset-y-0 left-0 w-1/2 overflow-hidden bg-white"
@@ -66,7 +86,7 @@ export function Hero() {
           <div className="absolute inset-y-0 left-0 w-[200%]">
             <Image
               src="/mascot.webp"
-              alt=""
+              alt="mascot"
               fill
               priority
               sizes="100vw"
@@ -75,7 +95,6 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Right half */}
         <div
           ref={rightRef}
           className="absolute inset-y-0 right-0 w-1/2 overflow-hidden bg-white"
@@ -83,7 +102,7 @@ export function Hero() {
           <div className="absolute inset-y-0 right-0 w-[200%]">
             <Image
               src="/mascot.webp"
-              alt=""
+              alt="mascot"
               fill
               priority
               sizes="100vw"

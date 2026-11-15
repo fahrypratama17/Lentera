@@ -212,7 +212,6 @@
   }
 }
 
-
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -226,7 +225,36 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  @keyframes wave-drift {
+    0% {
+      transform: translateX(-2%) scaleX(1.05);
+    }
+
+    100% {
+      transform: translateX(2%) scaleX(1.05);
+    }
+  }
+
+  @keyframes wave-drift-reverse {
+    0% {
+      transform: translateX(2%) scaleX(1.05);
+    }
+
+    100% {
+      transform: translateX(-2%) scaleX(1.05);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-\[wave-drift_14s_ease-in-out_infinite_alternate\],
+    .animate-\[wave-drift-reverse_18s_ease-in-out_infinite_alternate\] {
+      animation: none;
+    }
+  }
 }
+
+
 
 @theme inline {
   --font-heading: var(--font-sans);
