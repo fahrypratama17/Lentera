@@ -11,7 +11,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Learning Platform",
+  title: "Lentera",
   description: "Platform pembelejaran berbasis cohort",
 };
 

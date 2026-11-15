@@ -4,7 +4,7 @@ import { HowTo } from "../components/HowTo";
 import { Benefits } from "../components/Benefit";
 import { About } from "../components/About";
 import { Cta } from "../components/CTA";
-import { Footer } from "@/shared/components/Footer/Footer";
+import { Footer } from "@/features/home/components/Footer";
 
 export default function Home() {
   return (
