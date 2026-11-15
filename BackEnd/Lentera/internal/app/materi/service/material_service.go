@@ -13,19 +13,29 @@ import (
 )
 
 type materialService struct {
-	repo contract.MaterialRepository
-	rt   contract.Broadcaster
-	now  func() time.Time
+	repo     contract.MaterialRepository
+	uploader contract.FileUploader
+	rt       contract.Broadcaster
+	now      func() time.Time
 }
 
 func New(repo contract.MaterialRepository, rt contract.Broadcaster, now func() time.Time) contract.MaterialService {
+	return NewWithUploader(repo, nil, rt, now)
+}
+
+func NewWithUploader(repo contract.MaterialRepository, uploader contract.FileUploader, rt contract.Broadcaster, now func() time.Time) contract.MaterialService {
 	if rt == nil {
 		rt = contract.NoopBroadcaster{}
 	}
 	if now == nil {
 		now = time.Now
 	}
-	return &materialService{repo: repo, rt: rt, now: now}
+	return &materialService{
+		repo:     repo,
+		uploader: uploader,
+		rt:       rt,
+		now:      now,
+	}
 }
 
 func (s *materialService) ListMaterials(ctx context.Context, userID, cohortID uint, q dto.ListMaterialsQuery) ([]dto.MaterialResponse, error) {
@@ -344,3 +354,4 @@ func toUTC(t *time.Time) *time.Time {
 	u := t.UTC()
 	return &u
 }
+
