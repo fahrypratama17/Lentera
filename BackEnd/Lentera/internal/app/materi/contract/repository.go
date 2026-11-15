@@ -13,4 +13,11 @@ type MaterialRepository interface {
 	ListUserProgress(ctx context.Context, cohortID, userID uint) ([]entity.Progress, error)
 	GetUserProgress(ctx context.Context, materialID, userID uint) (*entity.Progress, error)
 	GetUserNames(ctx context.Context, ids []uint) (map[uint]string, error)
+
+	// ── baru: CRUD materi ──
+	NextPosition(ctx context.Context, cohortID uint) (int, error)
+	CreateMaterial(ctx context.Context, m *entity.Material) error
+	UpdateMaterial(ctx context.Context, cohortID, materialID uint, fields map[string]any) error
+	DeleteMaterial(ctx context.Context, cohortID, materialID uint) error
+	ReorderMaterials(ctx context.Context, cohortID uint, orderedIDs []uint) error
 }
