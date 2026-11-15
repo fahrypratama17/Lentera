@@ -162,7 +162,7 @@ const CreateCohortDialog = ({
 
           <Button
             type="submit"
-            className="h-11 cursor-pointer rounded-xl bg-[#1F506D] px-5 font-bold text-white hover:bg-[#0D6684]"
+            className="bg-primary hover:bg-secondary h-11 cursor-pointer rounded-xl px-5 font-bold text-white"
           >
             <Plus className="size-4" />
             Buat Kelas

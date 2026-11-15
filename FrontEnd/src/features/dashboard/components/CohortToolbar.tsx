@@ -1,23 +1,7 @@
 import { Search } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import type { CohortFilter } from "@/features/dashboard/types/type";
-
-interface CohortToolbarProps {
-  filter: CohortFilter;
-  onFilterChange: (value: CohortFilter) => void;
-  search: string;
-  onSearchChange: (value: string) => void;
-}
-
-const filters: {
-  label: string;
-  value: CohortFilter;
-}[] = [
-  { label: "Semua", value: "all" },
-  { label: "Mentor", value: "mentor" },
-  { label: "Member", value: "member" },
-];
+import { CohortToolbarProps, filters } from "@/features/dashboard/types/type";
 
 const CohortToolbar = ({
   filter,
@@ -27,7 +11,6 @@ const CohortToolbar = ({
 }: CohortToolbarProps) => {
   return (
     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-      {/* Role Filter */}
       <div
         role="group"
         aria-label="Filter kelas berdasarkan role"
@@ -46,7 +29,7 @@ const CohortToolbar = ({
               onClick={() => onFilterChange(item.value)}
               className={`h-9 cursor-pointer rounded-lg px-4 text-sm font-semibold transition-colors ${
                 active
-                  ? "bg-[#1F506D] text-white hover:bg-[#0D6684] hover:text-white"
+                  ? "bg-primary hover:bg-secondary text-white hover:text-white"
                   : "text-secondary-text hover:bg-secondary-light hover:text-primary"
               } `}
             >
@@ -56,8 +39,7 @@ const CohortToolbar = ({
         })}
       </div>
 
-      {/* Search */}
-      <div className="relative w-full sm:max-w-[310px]">
+      <div className="relative w-full sm:max-w-77.5">
         <Search className="text-secondary-text pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 
         <Input

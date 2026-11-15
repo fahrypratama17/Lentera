@@ -1,4 +1,4 @@
-import { BookOpen, Sparkles } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 const DashboardHeader = () => {
   return (

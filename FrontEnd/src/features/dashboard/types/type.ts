@@ -39,3 +39,19 @@ export const toneClasses: Record<Cohort["tone"], string> = {
 export interface DashboardBannerProps {
   onCreate: () => void;
 }
+
+export interface CohortToolbarProps {
+  filter: CohortFilter;
+  onFilterChange: (value: CohortFilter) => void;
+  search: string;
+  onSearchChange: (value: string) => void;
+}
+
+export const filters: {
+  label: string;
+  value: CohortFilter;
+}[] = [
+  { label: "Semua", value: "all" },
+  { label: "Mentor", value: "mentor" },
+  { label: "Member", value: "member" },
+];

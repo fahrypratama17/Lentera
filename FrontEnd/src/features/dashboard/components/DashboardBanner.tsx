@@ -1,4 +1,4 @@
-import { ArrowRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import Image from "next/image";
 import { DashboardBannerProps } from "@/features/dashboard/types/type";
