@@ -5,8 +5,7 @@ import "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/enti
 type UserResponse struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
-	Role string `json:"role"`
-	// email sengaja gak ditampilkan; tambahin kalau PRD minta
+	Email string `json:"email"`
 }
 
 type AuthResponse struct {
@@ -15,5 +14,5 @@ type AuthResponse struct {
 }
 
 func FromUser(u entity.User) UserResponse {
-	return UserResponse{ID: u.ID, Name: u.Name, Role: u.Role}
+	return UserResponse{ID: u.ID, Name: u.Name, Email: u.Email}
 }
