@@ -1,5 +1,7 @@
-import { ArrowRight, BookOpen, GraduationCap, UsersRound } from "lucide-react";
+import { ArrowRight, BookOpen, Lightbulb, UsersRound } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import Image from "next/image";
+import AuthBackground from "@/features/auth/components/AuthBackground";
 
 interface AuthSidePanelProps {
   isRegister: boolean;
@@ -9,32 +11,22 @@ interface AuthSidePanelProps {
 const AuthSidePanel = ({ isRegister, onSwitch }: AuthSidePanelProps) => {
   return (
     <aside
-      className={`from-primary to-secondary absolute inset-y-0 left-1/2 z-10 hidden w-1/2 overflow-hidden bg-linear-to-br text-white transition-transform duration-700 ease-in-out md:flex ${isRegister ? "-translate-x-full" : "translate-x-0"} `}
+      className={`absolute inset-y-0 left-1/2 z-10 hidden w-1/2 overflow-hidden bg-linear-to-br from-[#0D6684] via-[#176781] to-[#1F506D] text-white transition-transform duration-700 ease-in-out md:flex ${
+        isRegister ? "-translate-x-full" : "translate-x-0"
+      } `}
     >
-      <svg
-        viewBox="0 0 500 650"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full"
-      >
-        <circle cx="420" cy="90" r="170" fill="#E6F3FB" opacity="0.06" />
-
-        <path
-          d="M0 460 C130 360 310 560 500 410 L500 650 L0 650 Z"
-          fill="#E6F3FB"
-          opacity="0.08"
-        />
-
-        <path
-          d="M0 540 C160 460 340 630 500 500 L500 650 L0 650 Z"
-          fill="#E6F3FB"
-          opacity="0.12"
-        />
-      </svg>
+      <AuthBackground />
 
       <div className="relative z-10 flex w-full flex-col items-center justify-center gap-7 px-10 text-center">
-        <div className="flex size-24 items-center justify-center rounded-3xl border border-white/20 bg-white/10 shadow-lg backdrop-blur-sm">
-          <GraduationCap size={48} strokeWidth={1.5} />
+        <div className="flex size-28 items-center justify-center rounded-3xl border border-white/20 bg-white/95 p-3 shadow-xl shadow-black/10">
+          <Image
+            src="/logo.webp"
+            alt="Logo aplikasi"
+            width={96}
+            height={96}
+            className="h-full w-full object-contain"
+            priority
+          />
         </div>
 
         <div className="flex flex-col gap-3">
@@ -44,7 +36,7 @@ const AuthSidePanel = ({ isRegister, onSwitch }: AuthSidePanelProps) => {
               : "Belajar Lebih Baik Bersama"}
           </h2>
 
-          <p className="text-md-medium leading-relaxed text-white/80">
+          <p className="text-md-medium leading-relaxed text-white/85">
             {isRegister
               ? "Sudah memiliki akun? Masuk untuk melanjutkan perjalanan belajarmu."
               : "Bergabung dengan cohort, jelajahi materi, dan berkembang bersama komunitasmu."}
@@ -52,16 +44,14 @@ const AuthSidePanel = ({ isRegister, onSwitch }: AuthSidePanelProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="rounded-xl bg-white/10 p-3">
+          <div className="rounded-xl border border-white/20 bg-white/10 p-3 backdrop-blur-sm">
             <BookOpen size={22} />
           </div>
-
-          <div className="rounded-xl bg-white/10 p-3">
+          <div className="rounded-xl border border-white/20 bg-white/10 p-3 backdrop-blur-sm">
             <UsersRound size={22} />
           </div>
-
-          <div className="rounded-xl bg-white/10 p-3">
-            <GraduationCap size={22} />
+          <div className="rounded-xl border border-white/20 bg-white/10 p-3 backdrop-blur-sm">
+            <Lightbulb size={22} />
           </div>
         </div>
 
@@ -69,7 +59,7 @@ const AuthSidePanel = ({ isRegister, onSwitch }: AuthSidePanelProps) => {
           type="button"
           size="lg"
           onClick={onSwitch}
-          className="text-sm-bold text-primary hover:bg-secondary-light mt-3 h-12 min-w-44 cursor-pointer rounded-xl border border-white/30 bg-white px-6 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+          className="text-sm-bold mt-3 h-12 min-w-44 cursor-pointer rounded-xl border border-white/20 bg-[#E6F3FB] px-6 text-[#1F506D] transition-all duration-200 hover:-translate-y-0.5 hover:bg-white active:translate-y-0"
         >
           {isRegister ? "Masuk" : "Daftar Sekarang"}
           <ArrowRight size={17} />
