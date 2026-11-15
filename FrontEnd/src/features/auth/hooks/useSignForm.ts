@@ -11,6 +11,7 @@ import {
   useSignInMutation,
   useSignUpMutation,
 } from "@/shared/repository/auth/query";
+import { setAccessToken } from "@/shared/lib/auth-storage";
 
 function getErrorMessage(error: unknown): string | null {
   if (!error) return null;
@@ -71,7 +72,7 @@ export function useSignForm(mode: SignMode) {
               return;
             }
 
-            localStorage.setItem("lentera_token", token);
+            setAccessToken(token);
 
             router.replace("/dashboard");
             router.refresh();

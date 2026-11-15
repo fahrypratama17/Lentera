@@ -22,3 +22,7 @@ export async function signUpAction(
 
   return data;
 }
+
+export async function signOutAction(): Promise<void> {
+  await api.post("/auth/logout");
+}

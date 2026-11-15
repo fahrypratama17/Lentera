@@ -7,6 +7,7 @@ import {
   BookOpen,
   ClipboardList,
   LayoutDashboard,
+  Loader2,
   LogOut,
   UserRound,
 } from "lucide-react";
@@ -26,6 +27,8 @@ import {
 
 interface AppSidebarProps {
   onLogout: () => void | Promise<void>;
+  logoutPending?: boolean;
+  logoutError?: string | null;
 }
 
 const navigation = [
@@ -51,7 +54,11 @@ const navigation = [
   },
 ];
 
-const AppSidebar = ({ onLogout }: AppSidebarProps) => {
+const AppSidebar = ({
+  onLogout,
+  logoutPending = false,
+  logoutError,
+}: AppSidebarProps) => {
   const pathname = usePathname();
 
   const isActiveRoute = (href: string) => {
@@ -110,16 +117,33 @@ const AppSidebar = ({ onLogout }: AppSidebarProps) => {
       </SidebarContent>
 
       <SidebarFooter className="border-border gap-3 border-t p-3">
+        {logoutError && (
+          <p
+            role="alert"
+            className="rounded-lg bg-red-50 p-2 text-xs text-red-600 group-data-[collapsible=icon]:hidden"
+          >
+            {logoutError}
+          </p>
+        )}
+
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               type="button"
-              tooltip="Keluar"
+              tooltip={logoutPending ? "Sedang keluar..." : "Keluar"}
+              disabled={logoutPending}
               onClick={() => void onLogout()}
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive h-12 cursor-pointer rounded-xl px-3 text-base font-semibold"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive h-12 cursor-pointer rounded-xl px-3 text-base font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <LogOut className="size-5! shrink-0" />
-              <span className="truncate">Keluar</span>
+              {logoutPending ? (
+                <Loader2 className="size-5! shrink-0 animate-spin" />
+              ) : (
+                <LogOut className="size-5! shrink-0" />
+              )}
+
+              <span className="truncate">
+                {logoutPending ? "Sedang keluar..." : "Keluar"}
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
