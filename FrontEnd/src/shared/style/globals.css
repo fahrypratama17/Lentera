@@ -168,6 +168,53 @@
   }
 }
 
+@layer components {
+  .navbar {
+    @apply fixed inset-x-0 top-0 z-50 mx-auto flex items-center
+      text-primary-text
+      transition-all duration-300 ease-in-out;
+  }
+
+  .navbar__inner {
+    @apply flex w-full items-center justify-between gap-6;
+  }
+
+  .navbar.not-scrolled {
+    @apply w-full
+      border-b border-primary/15
+      bg-background
+      px-5 py-4
+      shadow-[0_1px_2px_rgba(10,23,43,0.06)]
+      lg:px-8;
+  }
+  .navbar.not-scrolled .navbar__inner {
+    margin-inline: auto;
+    max-width: 1120px; 
+  }
+
+  .navbar.scrolled {
+    @apply top-4
+      w-[85%]
+      rounded-full
+      border border-primary/20
+      bg-background/90
+      px-5 py-3
+      shadow-[0_14px_34px_-16px_rgba(10,23,43,0.22)]
+      backdrop-blur-xl
+      lg:px-6;
+  }
+
+  @media (max-width: 768px) {
+    .navbar.scrolled {
+      @apply top-3 w-[94%] rounded-2xl px-4 py-2.5;
+    }
+    .navbar.not-scrolled {
+      @apply px-4 py-3;
+    }
+  }
+}
+
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -229,10 +276,6 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -264,10 +307,6 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);

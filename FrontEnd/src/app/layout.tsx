@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "../shared/style/globals.css";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import Providers from "@/shared/provider/providers";
 
 const nunito = Nunito({
