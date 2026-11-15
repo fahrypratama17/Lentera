@@ -24,6 +24,11 @@ export function useHeroReveal() {
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const ctx = gsap.context(() => {
+        gsap.set(content, {
+          opacity: 0.5,
+          scale: 0.96,
+        });
+
         const tl = gsap.timeline({
           defaults: {
             ease: "none",
@@ -31,10 +36,11 @@ export function useHeroReveal() {
           scrollTrigger: {
             trigger: hero,
             start: "top top",
-            end: "+=100%",
+            end: "+=120%",
             scrub: 1,
             pin: true,
             anticipatePin: 1,
+            invalidateOnRefresh: true,
           },
         });
 
@@ -45,28 +51,26 @@ export function useHeroReveal() {
             duration: 1,
           },
           0,
-        )
-          .to(
-            right,
-            {
-              xPercent: 100,
-              duration: 1,
-            },
-            0,
-          )
-          .fromTo(
-            content,
-            {
-              opacity: 0.5,
-              scale: 0.96,
-            },
-            {
-              opacity: 1,
-              scale: 1,
-              duration: 0.7,
-            },
-            0.2,
-          );
+        );
+
+        tl.to(
+          right,
+          {
+            xPercent: 100,
+            duration: 1,
+          },
+          0,
+        );
+
+        tl.to(
+          content,
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.7,
+          },
+          0.2,
+        );
       }, hero);
 
       return () => ctx.revert();
@@ -74,6 +78,7 @@ export function useHeroReveal() {
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
       gsap.set([left, right], { display: "none" });
+      gsap.set(content, { opacity: 1, scale: 1 });
     });
 
     return () => mm.revert();
