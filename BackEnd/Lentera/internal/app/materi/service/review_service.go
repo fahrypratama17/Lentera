@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -221,6 +222,12 @@ func (s *reviewService) decide(
 	if err := s.repo.SaveReview(ctx, p, fromStatus); err != nil {
 		return nil, err // didahului mentor lain → 409
 	}
+
+	// catat siapa memutuskan apa — tanpa isi catatan review (data pribadi)
+	slog.InfoContext(ctx, "review decided",
+		"actor_id", userID, "cohort_id", cohortID, "progress_id", p.ID,
+		"member_id", p.UserID, "material_id", p.MaterialID,
+		"from", fromStatus, "to", p.Status)
 
 	item, err := s.buildItem(ctx, cohortID, p)
 	if err != nil {
