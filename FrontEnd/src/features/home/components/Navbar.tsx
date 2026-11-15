@@ -4,9 +4,9 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { useNavbar } from "@/shared/hooks/use-navbar";
-import { Logo } from "../Logo/Logo";
 import { NAV_LINKS } from "@/features/home/data/data";
 import { cn } from "cn";
+import Image from "next/image";
 
 export function Navbar() {
   const { scrolled, menuOpen, toggleMenu, closeMenu } = useNavbar();
@@ -14,7 +14,21 @@ export function Navbar() {
   return (
     <header className={cn("navbar", scrolled ? "scrolled" : "not-scrolled")}>
       <div className="navbar-inner flex w-full items-center justify-between gap-6">
-        <Logo onNavigate={closeMenu} />
+        <div
+          aria-label="Lentera - Learning Tracker"
+          className="focus-visible:ring-ring flex w-fit shrink-0 items-center gap-3 rounded-full focus-visible:ring-2 focus-visible:outline-none"
+        >
+          <Image
+            src="/logo.webp"
+            alt="Logo Lentera"
+            width={48}
+            height={48}
+            className="size-12 object-contain"
+          />
+          <span className="text-primary text-xl font-extrabold tracking-tight">
+            Lentera
+          </span>
+        </div>
 
         <nav
           aria-label="Navigasi utama"
