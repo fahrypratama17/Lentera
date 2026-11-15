@@ -24,7 +24,7 @@ func (h *MonitoringHandler) Dashboard(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -44,7 +44,7 @@ func (h *MonitoringHandler) Matrix(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -70,7 +70,7 @@ func (h *MonitoringHandler) MemberProgress(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return

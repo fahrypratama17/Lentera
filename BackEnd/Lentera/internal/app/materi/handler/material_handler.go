@@ -24,7 +24,7 @@ func (h *MaterialHandler) List(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -50,7 +50,7 @@ func (h *MaterialHandler) Detail(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -75,7 +75,7 @@ func (h *MaterialHandler) MySummary(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -97,7 +97,7 @@ func (h *MaterialHandler) Create(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -123,7 +123,7 @@ func (h *MaterialHandler) Update(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -154,7 +154,7 @@ func (h *MaterialHandler) Delete(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -178,7 +178,7 @@ func (h *MaterialHandler) Reorder(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
