@@ -28,7 +28,6 @@ const DashboardBanner = ({ onCreate }: DashboardBannerProps) => {
           >
             <Plus className="size-4" />
             Buat Kelas Baru
-            <ArrowRight className="size-4" />
           </Button>
         </div>
 
