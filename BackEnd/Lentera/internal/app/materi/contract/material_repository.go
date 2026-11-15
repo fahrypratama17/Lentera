@@ -20,4 +20,7 @@ type MaterialRepository interface {
 	UpdateMaterial(ctx context.Context, cohortID, materialID uint, fields map[string]any) error
 	DeleteMaterial(ctx context.Context, cohortID, materialID uint) error
 	ReorderMaterials(ctx context.Context, cohortID uint, orderedIDs []uint) error
+
+	// ── baru: progres & pengumpulan ──
+	SaveProgress(ctx context.Context, p *entity.Progress) error
 }

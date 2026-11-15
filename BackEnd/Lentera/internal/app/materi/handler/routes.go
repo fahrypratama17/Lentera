@@ -15,4 +15,14 @@ func (h *MaterialHandler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerF
 	cohort.PUT("/materials/order", h.Reorder)
 	cohort.PATCH("/materials/:materialId", h.Update)
 	cohort.DELETE("/materials/:materialId", h.Delete)
+
+	// progres & pengumpulan (Member)
+	cohort.POST("/materials/:materialId/start", h.Start)
+	cohort.POST("/materials/:materialId/submit", h.Submit)
+
+	// review pengumpulan (Mentor)
+	cohort.POST("/materials/:materialId/submissions/:userId/review", h.Review)
+
+	// upload file PDF ke Supabase (Mentor: purpose=material, Member: purpose=submission)
+	cohort.POST("/materials/upload", h.UploadPDF)
 }

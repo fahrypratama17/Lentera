@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/config"
+	cohortHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/handler"
+	cohortRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/repository"
+	cohortService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/service"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/contract"
 	materialHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/handler"
 	materialRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/repository"
@@ -20,11 +23,9 @@ import (
 	userService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/service"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/cache"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/database"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/storage"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/middleware"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/realtime"
-	cohortHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/handler"
-	cohortRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/repository"
-	cohortService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,6 +55,13 @@ func Run() {
 	_ = rdb // supaya bisa di-capture closure di bawah
 	hub := realtime.NewHub()
 
+	var uploader contract.FileUploader
+	if cfg.SupabaseURL != "" && cfg.SupabaseServiceKey != "" && cfg.SupabaseBucket != "" {
+		uploader = storage.NewSupabaseStorage(cfg.SupabaseURL, cfg.SupabaseServiceKey, cfg.SupabaseBucket)
+	} else {
+		log.Warn("supabase storage belum dikonfigurasi, endpoint upload PDF dinonaktifkan")
+	}
+
 	// ---- http ----
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
@@ -76,9 +84,10 @@ func Run() {
 	// ---- modules (DI manual: repo -> service -> handler) ----
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
 	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
-	featureAHandler.New(featureAService.New(featureARepo.New(db), db, rdb, hub)).RegisterRoutes(api, auth)
-	featureBHandler.New(featureBService.New(featureBRepo.New(db), db, rdb, hub)).RegisterRoutes(api, auth)
-	materialHandler.New(materialService.New(materialRepo.New(db), contract.NoopBroadcaster{}, func() time.Time { return time.Now().UTC() })).RegisterRoutes(api, auth)
+
+	matRepo := materialRepo.New(db)
+	matSvc := materialService.NewWithUploader(matRepo, uploader, contract.NoopBroadcaster{}, func() time.Time { return time.Now().UTC() })
+	materialHandler.New(matSvc).RegisterRoutes(api, auth)
 	// TODO: modul baru -> tambah 1 baris di sini
 
 	api.GET("/ws", auth, hub.ServeWS)

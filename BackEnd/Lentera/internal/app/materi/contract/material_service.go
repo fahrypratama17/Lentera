@@ -16,4 +16,11 @@ type MaterialService interface {
 	UpdateMaterial(ctx context.Context, userID, cohortID, materialID uint, req dto.UpdateMaterialRequest) (*dto.MaterialResponse, error)
 	DeleteMaterial(ctx context.Context, userID, cohortID, materialID uint) error
 	ReorderMaterials(ctx context.Context, userID, cohortID uint, req dto.ReorderMaterialsRequest) ([]dto.MaterialResponse, error)
+
+	// ── baru: progres member & review mentor ──
+	StartMaterial(ctx context.Context, userID, cohortID, materialID uint) (*dto.ProgressResponse, error)
+	SubmitMaterial(ctx context.Context, userID, cohortID, materialID uint, req dto.SubmitMaterialRequest) (*dto.ProgressResponse, error)
+	ReviewSubmission(ctx context.Context, mentorID, cohortID, materialID, targetUserID uint, req dto.ReviewSubmissionRequest) (*dto.ProgressResponse, error)
+
+	UploadPDF(ctx context.Context, userID, cohortID uint, purpose, originalName string, data []byte) (*dto.UploadedFileResponse, error)
 }
