@@ -4,6 +4,7 @@ import { Benefits } from "../components/BenefitSection";
 import { Cta } from "../components/CTASection";
 import { Hero } from "../components/HeroSection";
 import { HowTo } from "../components/HowToSection";
+import { Footer } from "@/shared/components/Footer/Footer";
 
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
         <About />     
         <Cta />       
       </main>
+      <Footer/>
     </div>
   )
 }
