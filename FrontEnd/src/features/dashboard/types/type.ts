@@ -24,3 +24,14 @@ export interface CreateCohortValues {
 }
 
 export type CohortFilter = "all" | CohortRole;
+
+export interface CohortCardProps {
+  cohort: Cohort;
+  onOpen: (cohort: Cohort) => void;
+}
+
+export const toneClasses: Record<Cohort["tone"], string> = {
+  ocean: "bg-[linear-gradient(115deg,#1F506D,#0D6684)]",
+  teal: "bg-[linear-gradient(115deg,#0D6684,#328CAC)]",
+  slate: "bg-[linear-gradient(115deg,#28465D,#54758B)]",
+};
