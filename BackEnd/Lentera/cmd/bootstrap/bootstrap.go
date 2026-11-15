@@ -24,6 +24,9 @@ import (
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/database"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/middleware"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/realtime"
+	cohortHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/handler"
+	cohortRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/repository"
+	cohortService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -73,6 +76,7 @@ func Run() {
 
 	// ---- modules (DI manual: repo -> service -> handler) ----
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
+	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
 	featureAHandler.New(featureAService.New(featureARepo.New(db), db, rdb, hub)).RegisterRoutes(api, auth)
 	featureBHandler.New(featureBService.New(featureBRepo.New(db), db, rdb, hub)).RegisterRoutes(api, auth)
 	// TODO: modul baru -> tambah 1 baris di sini
