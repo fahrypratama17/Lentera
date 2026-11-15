@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useDashboardController } from "@/features/dashboard/hooks/useDashboardController";
-import { buildCohortSlug } from "../utils/slug";
+import { buildCohortSlug } from "../utils/slugify";
 
 type CohortItem = ReturnType<
   typeof useDashboardController

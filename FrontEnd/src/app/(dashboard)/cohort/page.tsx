@@ -1,5 +1,10 @@
-import CohortContainer from "@/features/member-cohort/container/CohortContainer";
+import CohortDetailRedirectContainer from "@/features/member-cohort/[slug]/container/CohortDetailRedirectContainer";
 
-export default function CohortPage() {
-  return <CohortContainer />;
+export default async function CohortDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  return <CohortDetailRedirectContainer slug={slug} />;
 }
