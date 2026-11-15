@@ -1,8 +1,8 @@
 import { Navbar } from "@/features/home/components/Navbar";
+import { Hero } from "@/features/home/components/Hero";
 import { About } from "../components/AboutSection";
 import { Benefits } from "../components/BenefitSection";
 import { Cta } from "../components/CTASection";
-import { Hero } from "../components/HeroSection";
 import { HowTo } from "../components/HowToSection";
 import { Footer } from "@/shared/components/Footer/Footer";
 
