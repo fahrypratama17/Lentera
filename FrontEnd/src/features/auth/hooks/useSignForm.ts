@@ -1,22 +1,40 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ApiResponse, SignFormValues, SignMode } from "../types/type";
+import { isAxiosError } from "axios";
+import type { SignFormValues, SignMode } from "../types/type";
+import type { AuthResponseDto } from "@/shared/repository/auth/dto";
 import { createSignSchema } from "@/shared/schemas/sign.schema";
+import {
+  useSignInMutation,
+  useSignUpMutation,
+} from "@/shared/repository/auth/query";
 
-const API_URL = {
-  signIn: "/api/auth/login",
-  signUp: "/api/auth/register",
-};
+function getErrorMessage(error: unknown): string | null {
+  if (!error) return null;
+
+  if (isAxiosError<AuthResponseDto>(error)) {
+    return (
+      error.response?.data?.error ??
+      error.response?.data?.message ??
+      (error.response
+        ? "Terjadi kesalahan. Silakan coba lagi."
+        : "Gagal terhubung ke server.")
+    );
+  }
+
+  return error instanceof Error
+    ? error.message
+    : "Terjadi kesalahan yang tidak diketahui.";
+}
 
 export function useSignForm(mode: SignMode) {
   const router = useRouter();
 
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const signInMutation = useSignInMutation();
+  const signUpMutation = useSignUpMutation();
 
   const form = useForm<SignFormValues>({
     resolver: zodResolver(createSignSchema(mode)),
@@ -30,66 +48,38 @@ export function useSignForm(mode: SignMode) {
   });
 
   const onSubmit: SubmitHandler<SignFormValues> = async (values) => {
-    setError(null);
-    setSuccess(null);
-
     try {
-      const payload =
-        mode === "signIn"
-          ? {
-              email: values.email.trim(),
-              password: values.password,
-            }
-          : {
-              userName: values.userName.trim(),
-              email: values.email.trim(),
-              password: values.password,
-            };
-
-      const response = await fetch(API_URL[mode], {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "same-origin",
-        body: JSON.stringify(payload),
-      });
-
-      const data = (await response
-        .json()
-        .catch(() => null)) as ApiResponse | null;
-
-      if (!response.ok) {
-        throw new Error(
-          data?.error ??
-            data?.message ??
-            "Terjadi kesalahan. Silakan coba lagi.",
-        );
-      }
-
       if (mode === "signIn") {
+        await signInMutation.mutateAsync({
+          email: values.email.trim(),
+          password: values.password,
+        });
+
         router.replace("/dashboard");
         router.refresh();
         return;
       }
 
-      setSuccess("Pendaftaran berhasil! Silakan masuk menggunakan akun baru.");
+      await signUpMutation.mutateAsync({
+        userName: values.userName.trim(),
+        email: values.email.trim(),
+        password: values.password,
+      });
 
       form.reset();
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Terjadi kesalahan yang tidak diketahui.",
-      );
-    }
+    } catch {}
   };
+
+  const mutation = mode === "signIn" ? signInMutation : signUpMutation;
 
   return {
     form,
     onSubmit,
-    isPending: form.formState.isSubmitting,
-    error,
-    success,
+    isPending: form.formState.isSubmitting || mutation.isPending,
+    error: getErrorMessage(mutation.error),
+    success:
+      mode === "signUp" && signUpMutation.isSuccess
+        ? "Pendaftaran berhasil! Silakan masuk menggunakan akun baru."
+        : null,
   };
 }
