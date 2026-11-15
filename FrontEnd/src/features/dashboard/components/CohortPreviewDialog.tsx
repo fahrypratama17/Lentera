@@ -75,7 +75,7 @@ const CohortPreviewDialog = ({ cohort, onClose }: CohortPreviewDialogProps) => {
             <Button
               type="button"
               onClick={onClose}
-              className="h-11 w-full cursor-pointer rounded-xl bg-[#1F506D] text-white hover:bg-[#0D6684]"
+              className="bg-primary hover:bg-secondary h-11 w-full cursor-pointer rounded-xl text-white"
             >
               Tutup Ringkasan
             </Button>

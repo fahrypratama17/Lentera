@@ -15,7 +15,6 @@ import CohortPreviewDialog from "@/features/dashboard/components/CohortPreviewDi
 const Dashboard = () => {
   const {
     filteredCohorts,
-    counts,
     search,
     setSearch,
     filter,
@@ -29,16 +28,10 @@ const Dashboard = () => {
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-9 px-5 py-7 sm:px-8 lg:px-10">
-      {/* Dashboard Banner */}
       <DashboardBanner onCreate={() => setCreateOpen(true)} />
 
-      {/* Cohort Section */}
       <section id="classes" className="flex scroll-mt-24 flex-col gap-6">
-        <DashboardHeader
-          total={counts.all}
-          mentorCount={counts.mentor}
-          memberCount={counts.member}
-        />
+        <DashboardHeader />
 
         <CohortToolbar
           filter={filter}
@@ -47,7 +40,6 @@ const Dashboard = () => {
           onSearchChange={setSearch}
         />
 
-        {/* Cohort Grid */}
         {filteredCohorts.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {filteredCohorts.map((cohort) => (
@@ -63,11 +55,9 @@ const Dashboard = () => {
             <div className="bg-secondary-light text-primary flex size-14 items-center justify-center rounded-2xl">
               <SearchX className="size-6" />
             </div>
-
             <h3 className="text-lg-bold text-primary-text">
               Kelas Tidak Ditemukan
             </h3>
-
             <p className="text-sm-medium text-secondary-text max-w-md">
               Tidak ada kelas yang cocok dengan pencarian atau filter yang
               dipilih.
@@ -85,7 +75,6 @@ const Dashboard = () => {
         )}
       </section>
 
-      {/* Dialogs */}
       <CreateCohortDialog
         open={createOpen}
         onClose={() => setCreateOpen(false)}
