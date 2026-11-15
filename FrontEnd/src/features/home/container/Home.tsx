@@ -1,9 +1,9 @@
 import { Navbar } from "@/features/home/components/Navbar";
 import { Hero } from "@/features/home/components/Hero";
-import { About } from "../components/About";
-import { Benefits } from "../components/Benefit";
-import { Cta } from "../components/CTASection";
 import { HowTo } from "../components/HowTo";
+import { Benefits } from "../components/Benefit";
+import { About } from "../components/About";
+import { Cta } from "../components/CTA";
 import { Footer } from "@/shared/components/Footer/Footer";
 
 export default function Home() {
