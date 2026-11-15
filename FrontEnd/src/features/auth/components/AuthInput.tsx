@@ -16,18 +16,20 @@ interface AuthInputProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   type?: "text" | "email" | "password";
   autoComplete?: string;
+  disabled?: boolean;
 }
 
-export default function AuthInput<T extends FieldValues>({
+function AuthInput<T extends FieldValues>({
   control,
   name,
   label,
   placeholder,
   type = "text",
   autoComplete,
+  disabled = false,
 }: AuthInputProps<T>) {
   const id = useId();
   const errorId = `${id}-error`;
@@ -35,6 +37,7 @@ export default function AuthInput<T extends FieldValues>({
   const [showPassword, setShowPassword] = useState(false);
 
   const isPassword = type === "password";
+  const inputType = isPassword && showPassword ? "text" : type;
 
   return (
     <Controller
@@ -44,7 +47,7 @@ export default function AuthInput<T extends FieldValues>({
         <Field data-invalid={fieldState.invalid} className="gap-2">
           <FieldLabel
             htmlFor={id}
-            className="text-sm-semibold text-primary-text"
+            className="text-primary-text text-sm font-semibold"
           >
             {label}
           </FieldLabel>
@@ -53,15 +56,14 @@ export default function AuthInput<T extends FieldValues>({
             <input
               {...field}
               id={id}
+              type={inputType}
               value={typeof field.value === "string" ? field.value : ""}
-              type={isPassword && showPassword ? "text" : type}
               placeholder={placeholder}
               autoComplete={autoComplete}
+              disabled={disabled || field.disabled}
               aria-invalid={fieldState.invalid}
               aria-describedby={fieldState.invalid ? errorId : undefined}
-              className={`text-sm-medium border-primary/15 bg-surface text-primary-text placeholder:text-secondary-text/60 focus:border-secondary focus:ring-secondary/10 h-12 w-full rounded-xl border px-4 transition-all duration-200 outline-none focus:ring-4 aria-invalid:border-red-400 ${
-                isPassword ? "pr-12" : "pr-4"
-              } `}
+              className={`border-primary/15 bg-surface text-primary-text placeholder:text-secondary-text/60 focus:border-secondary focus:ring-secondary/10 h-12 w-full rounded-xl border px-4 text-sm font-medium transition-all duration-200 outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-red-400 ${isPassword ? "pr-12" : ""} `}
             />
 
             {isPassword && (
@@ -69,6 +71,7 @@ export default function AuthInput<T extends FieldValues>({
                 type="button"
                 variant="ghost"
                 size="icon"
+                disabled={disabled || field.disabled}
                 onClick={() => setShowPassword((prev) => !prev)}
                 aria-label={
                   showPassword ? "Sembunyikan password" : "Tampilkan password"
@@ -81,13 +84,17 @@ export default function AuthInput<T extends FieldValues>({
             )}
           </div>
 
-          <FieldError
-            id={errorId}
-            errors={[fieldState.error]}
-            className="text-xs"
-          />
+          {fieldState.error && (
+            <FieldError
+              id={errorId}
+              errors={[fieldState.error]}
+              className="text-xs"
+            />
+          )}
         </Field>
       )}
     />
   );
 }
+
+export default AuthInput;
