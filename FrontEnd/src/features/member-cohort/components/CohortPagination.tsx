@@ -1,5 +1,4 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
 import { Button } from "@/shared/components/ui/button";
 import type { CohortPaginationProps } from "../types/cohort-type";
 
@@ -32,7 +31,7 @@ const CohortPagination = ({
   return (
     <nav
       aria-label="Navigasi halaman kelas"
-      className="flex flex-col items-center justify-between gap-4 sm:flex-row my-2"
+      className="my-2 flex flex-col items-center justify-between gap-4 sm:flex-row"
     >
       <p className="text-secondary-text text-sm">
         Menampilkan {from}–{to} dari {totalItems} kelas

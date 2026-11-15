@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
-import CohortToolbar from "@/shared/components/Cohort/CohortToolbar";
+import CohortToolbar from "@/shared/components/CohortToolbar";
 import type { CohortActionBarProps } from "../types/cohort-type";
 
 const CohortActionBar = ({

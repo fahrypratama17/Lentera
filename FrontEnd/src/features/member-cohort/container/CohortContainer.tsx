@@ -3,8 +3,8 @@
 import CohortActionBar from "../components/CohortActionBar";
 import CohortGrid from "../components/CohortGrid";
 import CohortPagination from "../components/CohortPagination";
-import CohortEmptyState from "@/shared/components/Cohort/CohortEmptyState";
-import CreateCohortDialog from "@/shared/components/Cohort/CreateCohortDialog";
+import CohortEmptyState from "@/shared/components/CohortEmptyState";
+import CreateCohortDialog from "@/shared/components/CreateCohortDialog";
 import { useCohortController } from "../hooks/useCohort";
 import { COHORTS_PER_PAGE } from "../hooks/useCohort";
 import CohortBannerHeader from "../components/CohortBannerHeader";
@@ -30,8 +30,7 @@ const CohortContainer = () => {
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-7 px-5 py-7 sm:px-8 lg:px-10">
-      <CohortBannerHeader/>
-
+      <CohortBannerHeader />
 
       <CohortActionBar
         filter={filter}

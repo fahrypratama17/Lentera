@@ -1,4 +1,4 @@
-import CohortCard from "@/shared/components/Cohort/CohortCard";
+import CohortCard from "@/shared/components/CohortCard";
 import type { CohortGridProps } from "../types/cohort-type";
 
 const CohortGrid = ({ cohorts, onOpen }: CohortGridProps) => {

@@ -2,12 +2,12 @@
 
 import DashboardBanner from "@/features/dashboard/components/DashboardBanner";
 import DashboardHeader from "@/features/dashboard/components/DashboardHeader";
-import CohortToolbar from "@/shared/components/Cohort/CohortToolbar";
-import CohortCard from "@/shared/components/Cohort/CohortCard";
-import CreateCohortDialog from "@/shared/components/Cohort/CreateCohortDialog";
+import CohortToolbar from "@/shared/components/CohortToolbar";
+import CohortCard from "@/shared/components/CohortCard";
+import CreateCohortDialog from "@/shared/components/CreateCohortDialog";
 import CohortPreviewDialog from "@/features/dashboard/components/CohortPreviewDialog";
 import { useDashboardController } from "@/features/dashboard/hooks/useDashboardController";
-import CohortEmptyState from "@/shared/components/Cohort/CohortEmptyState";
+import CohortEmptyState from "@/shared/components/CohortEmptyState";
 
 const Dashboard = () => {
   const {
