@@ -67,13 +67,13 @@ const AppSidebar = ({ onLogout }: AppSidebarProps) => {
         >
           <Image
             src="/logo.webp"
-            alt="Logo StudyTrack"
+            alt="Logo Lentera"
             width={38}
             height={38}
             className="size-9 shrink-0 object-contain"
           />
           <span className="text-primary truncate text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden">
-            StudyTrack
+            Lentera
           </span>
         </Link>
       </SidebarHeader>

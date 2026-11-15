@@ -5,11 +5,17 @@ import { Button } from "@/shared/components/ui/button";
 import { FieldGroup } from "@/shared/components/ui/field";
 import AuthHeader from "./AuthHeader";
 import AuthInput from "./AuthInput";
-import { useSignForm } from "@/features/auth/hooks/useSignForm";
-import { LoginFormProps } from "@/features/auth/types/type";
+import { useSignForm } from "../hooks/useSignForm";
+import type { LoginFormProps } from "../types/type";
 
 const LoginForm = ({ onSwitch }: LoginFormProps) => {
-  const { form, onSubmit, isPending, error } = useSignForm("signIn");
+  const { form, onSubmit, isPending, error, resetFeedback } =
+    useSignForm("signIn");
+
+  const handleSwitch = () => {
+    resetFeedback();
+    onSwitch();
+  };
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -44,7 +50,10 @@ const LoginForm = ({ onSwitch }: LoginFormProps) => {
         </FieldGroup>
 
         {error && (
-          <p role="alert" className="text-sm-medium text-red-500">
+          <p
+            role="alert"
+            className="text-sm-medium rounded-xl bg-red-50 px-4 py-3 text-red-600"
+          >
             {error}
           </p>
         )}
@@ -52,7 +61,8 @@ const LoginForm = ({ onSwitch }: LoginFormProps) => {
         <Button
           type="submit"
           size="lg"
-          className="text-md-bold hover:bg-secondary hover:shadow-secondary/15 bg-primary h-12 w-full cursor-pointer rounded-xl text-white transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+          disabled={isPending}
+          className="text-md-bold bg-primary hover:bg-secondary hover:shadow-secondary/15 h-12 w-full cursor-pointer rounded-xl text-white transition-all duration-200 hover:shadow-lg active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending ? (
             <>
@@ -72,8 +82,8 @@ const LoginForm = ({ onSwitch }: LoginFormProps) => {
         Belum punya akun?{" "}
         <button
           type="button"
-          onClick={onSwitch}
-          className="text-secondary bg-primary cursor-pointer font-bold hover:underline"
+          onClick={handleSwitch}
+          className="text-secondary cursor-pointer font-bold hover:underline"
         >
           Daftar sekarang
         </button>

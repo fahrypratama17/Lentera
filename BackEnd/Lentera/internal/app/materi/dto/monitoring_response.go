@@ -18,6 +18,7 @@ type DashboardResponse struct {
 type MatrixResponse struct {
 	Materials []MatrixMaterial `json:"materials"`
 	Rows      []MatrixRow      `json:"rows"`
+	Meta      PaginationMeta   `json:"meta"`
 }
 
 type MatrixMaterial struct {

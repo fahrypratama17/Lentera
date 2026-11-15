@@ -18,7 +18,7 @@ func NewMonitoring(svc contract.MonitoringService) *MonitoringHandler {
 	return &MonitoringHandler{svc: svc}
 }
 
-// GET /cohorts/:cohortId/dashboard
+// GET /cohorts/:id/dashboard
 func (h *MonitoringHandler) Dashboard(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -38,7 +38,7 @@ func (h *MonitoringHandler) Dashboard(c *gin.Context) {
 	writeOK(c, res)
 }
 
-// GET /cohorts/:cohortId/matrix?q=&material_id=&status=
+// GET /cohorts/:id/matrix?q=&material_id=&status=
 func (h *MonitoringHandler) Matrix(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -64,7 +64,7 @@ func (h *MonitoringHandler) Matrix(c *gin.Context) {
 	writeOK(c, res)
 }
 
-// GET /cohorts/:cohortId/members/:userId/progress
+// GET /cohorts/:id/members/:userId/progress
 func (h *MonitoringHandler) MemberProgress(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {

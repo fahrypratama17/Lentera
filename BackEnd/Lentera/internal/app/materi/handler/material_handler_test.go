@@ -81,6 +81,38 @@ func (f *fakeService) ReorderMaterials(_ context.Context, userID, cohortID uint,
 	return []dto.MaterialResponse{}, nil
 }
 
+func (f *fakeService) StartMaterial(_ context.Context, userID, cohortID, materialID uint) (*dto.ProgressResponse, error) {
+	f.called, f.gotUserID, f.gotCohortID = true, userID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.ProgressResponse{MaterialID: materialID, Status: "in_progress"}, nil
+}
+
+func (f *fakeService) SubmitMaterial(_ context.Context, userID, cohortID, materialID uint, _ dto.SubmitMaterialRequest) (*dto.ProgressResponse, error) {
+	f.called, f.gotUserID, f.gotCohortID = true, userID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.ProgressResponse{MaterialID: materialID, Status: "submitted"}, nil
+}
+
+func (f *fakeService) ReviewSubmission(_ context.Context, mentorID, cohortID, materialID, _ uint, _ dto.ReviewSubmissionRequest) (*dto.ProgressResponse, error) {
+	f.called, f.gotUserID, f.gotCohortID = true, mentorID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.ProgressResponse{MaterialID: materialID, Status: "completed"}, nil
+}
+
+func (f *fakeService) UploadPDF(_ context.Context, userID, cohortID uint, _, _ string, _ []byte) (*dto.UploadedFileResponse, error) {
+	f.called, f.gotUserID, f.gotCohortID = true, userID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.UploadedFileResponse{}, nil
+}
+
 // ───────────────── helper ─────────────────
 
 // uid = 0 artinya simulasi request tanpa login

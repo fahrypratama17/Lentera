@@ -1,0 +1,64 @@
+name: CI/CD Backend Lentera
+
+on:
+  push:
+    branches:
+      - staging
+      - main
+    paths:
+      - "BackEnd/Lentera/**"
+      - ".github/workflows/deploy-be.yml"
+  workflow_dispatch:
+
+jobs:
+  ci-test-build:
+    name: Test & Build Go
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BackEnd/Lentera
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: BackEnd/Lentera/go.mod
+          cache: true
+          cache-dependency-path: BackEnd/Lentera/go.sum
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run unit tests
+        run: go test ./internal/...
+
+      - name: Build binary
+        run: go build -o bin/api ./cmd/api
+
+  cd-deploy:
+    name: Deploy Backend to VM Kelompok 2
+    needs: ci-test-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/Lentera
+
+            git fetch origin
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            cd BackEnd/Lentera
+            docker compose -f docker-compose.yaml up -d --build
+            docker image prune -f
