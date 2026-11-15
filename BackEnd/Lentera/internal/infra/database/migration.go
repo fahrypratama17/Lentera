@@ -4,6 +4,7 @@ import (
 	cohortEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/entity"
 	featureAEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/entity"
 	featureBEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/entity"
+	materiEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/entity"
 	userEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
 	"gorm.io/gorm"
 )
@@ -17,5 +18,6 @@ func Migrate(db *gorm.DB) error {
 		&cohortEntity.Cohort{},
 		&cohortEntity.Membership{},
 		&cohortEntity.Invitation{},
+		&materiEntity.Material{},
 	)
 }
