@@ -44,7 +44,7 @@ export const useCohortController = () => {
   };
 
   const openCohort = (cohort: CohortItem) => {
-    router.push(`/cohort/${buildCohortSlug(cohort.title, cohort.id)}`);
+    router.push(`/cohort/${buildCohortSlug(cohort.title, cohort.id)}/materi`);
     };
 
   return {
