@@ -1,8 +1,5 @@
 import {
   BookOpen,
-  Target,
-  UserCheck,
-  BarChart3,
   UsersRound,
   ClipboardCheck,
   ChartNoAxesCombined,
@@ -75,12 +72,6 @@ export const BENEFITS = [
     text: "Mentor dapat meninjau hasil pekerjaan dengan lebih terarah, sementara anggota tahu apa yang perlu diperbaiki.",
   },
 ] as const;
-
-export const STATS = [
-  { label: "Role", num: "2", desc: "Mentor & Member, per cohort." },
-  { label: "Status", num: "4", desc: "Belum mulai sampai Selesai." },
-  { label: "Matriks", num: "1", desc: "Seluruh progres dalam satu tampilan." },
-];
 
 export const VARIANTS = {
   tint: {

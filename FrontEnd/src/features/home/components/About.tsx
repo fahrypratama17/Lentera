@@ -1,58 +1,73 @@
-import { Settings } from "lucide-react";
-import { Separator } from "@base-ui/react/separator";
-import { OwlArt } from "./owl-art";
-import { STATS } from "../data/data";
+"use client";
+
 import Image from "next/image";
+import { useAboutAnimation } from "@/features/home/hooks/useAboutAnimation";
 
 export function About() {
+  const { sectionRef } = useAboutAnimation();
+
   return (
     <section
+      ref={sectionRef}
       id="tentang"
-      className="bg-background px-4 py-[clamp(3.5rem,7vw,6rem)]"
+      className="bg-background scroll-mt-28 px-4 py-[clamp(4rem,8vw,7rem)]"
     >
-      <div className="container mx-auto grid items-center gap-[clamp(1.75rem,5vw,4rem)] lg:grid-cols-[1.05fr_.95fr]">
-        <div className="flex flex-col gap-8">
-          <h2 className="text-primary-text max-w-[26ch] text-[clamp(1.625rem,3.4vw,2.375rem)] leading-[1.16] font-extrabold tracking-[-0.02em] text-balance">
-            Semua Tentang Lentera.
-          </h2>
+      <div className="container mx-auto grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="flex flex-col gap-7">
+          <div data-about-intro className="flex flex-col items-start gap-5">
+            <h2 className="text-primary-text max-w-[22ch] text-[clamp(2rem,4vw,3.25rem)] leading-[1.15] font-extrabold tracking-tight text-balance">
+              Setiap orang punya ritme belajar.
+              <span className="text-secondary">
+                {" "}
+                Lentera membantu semuanya tetap searah.
+              </span>
+            </h2>
+          </div>
 
-          <p className="text-secondary-text text-justify text-[15px] leading-[1.72]">
-            Workshop dan kelompok belajar BCC diikuti banyak anggota dengan
-            ritme yang tidak sama. Sebagian sudah menyelesaikan materi pertama,
-            sebagian belum mulai, sebagian menunggu keputusan review. Tanpa
-            catatan bersama, informasi ini tersebar di percakapan dan ingatan.
-            Learning Tracker menyatukan materi, progres, dan hasil belajar dalam
-            satu sumber yang sama. Mentor buka satu halaman, langsung tahu siapa
-            yang perlu didorong, siapa yang menunggu review, dan materi mana
-            yang mandek. Tanpa perlu tanya ulang.
-          </p>
+          <div
+            data-about-description
+            className="flex max-w-[62ch] flex-col gap-4"
+          >
+            <p className="text-secondary-text text-base leading-[1.85]">
+              Dalam workshop dan kelompok belajar BCC, setiap anggota punya
+              perjalanan yang berbeda. Ada yang sudah menyelesaikan materi, ada
+              yang baru memulai, dan ada pula yang sedang menunggu review dari
+              mentor.
+            </p>
 
-          <Separator className="bg-border mt-2.5" />
-
-          <div className="hidden grid-cols-1 gap-4 pt-1.5 sm:grid-cols-3 sm:gap-3 md:grid">
-            {STATS.map((s) => (
-              <div key={s.label}>
-                <div className="text-secondary-text/60 mb-1 text-[11.5px] font-bold tracking-[0.1em] uppercase">
-                  {s.label}
-                </div>
-                <div className="text-primary text-[22px] font-extrabold tracking-[-0.02em]">
-                  {s.num}
-                </div>
-                <div className="text-secondary-text mt-0.5 text-[13px] leading-snug">
-                  {s.desc}
-                </div>
-              </div>
-            ))}
+            <p className="text-secondary-text text-base leading-[1.85]">
+              Di sinilah Lentera hadir. Sebuah ruang belajar bersama yang
+              menyatukan materi, tugas, dan progres dalam satu tempat. Mentor
+              bisa mendampingi dengan lebih terarah, sementara anggota tahu
+              langkah berikutnya yang perlu dilakukan.
+            </p>
           </div>
         </div>
 
-        <div className="bg-secondary-light order-first flex h-full items-center justify-center rounded-3xl border lg:order-none">
+        <div
+          data-about-visual
+          className="bg-secondary-light border-secondary/10 relative isolate order-first flex min-h-95 items-center justify-center overflow-hidden rounded-[2rem] border lg:order-none lg:min-h-145"
+        >
+          {/* Background pattern */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-40"
+            style={{
+              backgroundImage: "radial-gradient(#85B8D0 1px, transparent 1px)",
+              backgroundSize: "26px 26px",
+            }}
+          />
+
+          <div className="absolute top-[12%] left-[12%] size-32 rounded-full bg-white/40 blur-2xl" />
+          <div className="bg-secondary/10 absolute right-[8%] bottom-[10%] size-48 rounded-full blur-3xl" />
+
           <Image
-            src={"/mascot.webp"}
-            alt="mascot"
-            width={500}
-            height={500}
-            className="w-[50%]"
+            src="/mascot.webp"
+            alt="Maskot burung hantu Lentera"
+            width={600}
+            height={600}
+            sizes="(max-width: 1024px) 80vw, 40vw"
+            className="relative z-10 w-[75%] max-w-117.5 object-contain drop-shadow-[0_25px_30px_rgba(31,80,109,0.12)] transition-transform duration-500 hover:scale-105"
           />
         </div>
       </div>
