@@ -5,13 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-primary: #1F506D;
-  --color-secondary: #0D6684;
-  --color-secondary-light: #E6F3FB;
-  --color-primary-text: #0A172B;
-  --color-secondary-text: #5A6574;
-  --color-surface: #FAFBFD;
-  --color-background: #FFFFFF;
+  --color-primary: #1f506d;
+  --color-secondary: #0d6684;
+  --color-secondary-light: #e6f3fb;
+  --color-primary-text: #0a172b;
+  --color-secondary-text: #5a6574;
+  --color-surface: #fafbfd;
+  --color-background: #ffffff;
 }
 
 @layer utilities {
