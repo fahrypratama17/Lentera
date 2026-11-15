@@ -1,101 +1,90 @@
 package handler
 
 import (
-	"net/http"
-	"strconv"
-
-	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/contract"
-	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/dto"
-	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/contract"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/dto"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 )
 
-// Handler cuma: bind/validasi input -> panggil service -> tulis response.
-type Handler struct {
-	svc contract.FeatureAService
+type MaterialHandler struct {
+	svc contract.MaterialService
 }
 
-func New(svc contract.FeatureAService) *Handler {
-	return &Handler{svc: svc}
+func NewMaterialHandler(svc contract.MaterialService) *MaterialHandler {
+	return &MaterialHandler{svc: svc}
 }
 
-func (h *Handler) Create(c *gin.Context) {
-	var req dto.CreateFeatureARequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ValidationError(c, err)
-		return
-	}
-	res, err := h.svc.Create(c.Request.Context(), c.GetUint("uid"), req)
-	if err != nil {
-		response.Error(c, err)
-		return
-	}
-	response.OK(c, http.StatusCreated, res)
-}
-
-func (h *Handler) GetByID(c *gin.Context) {
-	id, ok := parseID(c)
+// GET /cohorts/:cohortId/materials?q=&status=&late=
+func (h *MaterialHandler) List(c *gin.Context) {
+	userID, ok := currentUser(c)
 	if !ok {
 		return
 	}
-	res, err := h.svc.GetByID(c.Request.Context(), c.GetUint("uid"), id)
+	cohortID, err := paramID(c, "cohortId")
 	if err != nil {
-		response.Error(c, err)
+		writeError(c, err)
 		return
 	}
-	response.OK(c, http.StatusOK, res)
-}
 
-func (h *Handler) List(c *gin.Context) {
-	var q dto.ListFeatureAQuery
+	var q dto.ListMaterialsQuery
 	if err := c.ShouldBindQuery(&q); err != nil {
-		response.ValidationError(c, err)
+		writeError(c, fmt.Errorf("%w: %v", response.ErrBadRequest, err))
 		return
 	}
-	items, total, err := h.svc.List(c.Request.Context(), c.GetUint("uid"), q)
+
+	res, err := h.svc.ListMaterials(c.Request.Context(), userID, cohortID, q)
 	if err != nil {
-		response.Error(c, err)
+		writeError(c, err)
 		return
 	}
-	response.Paginated(c, items, response.PageMeta{Page: q.Page, Size: q.Size, Total: total})
+	writeOK(c, res)
 }
 
-func (h *Handler) Update(c *gin.Context) {
-	id, ok := parseID(c)
+// GET /cohorts/:cohortId/materials/:materialId
+func (h *MaterialHandler) Detail(c *gin.Context) {
+	userID, ok := currentUser(c)
 	if !ok {
 		return
 	}
-	var req dto.UpdateFeatureARequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ValidationError(c, err)
-		return
-	}
-	res, err := h.svc.Update(c.Request.Context(), c.GetUint("uid"), id, req)
+	cohortID, err := paramID(c, "cohortId")
 	if err != nil {
-		response.Error(c, err)
+		writeError(c, err)
 		return
 	}
-	response.OK(c, http.StatusOK, res)
+	materialID, err := paramID(c, "materialId")
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+
+	res, err := h.svc.GetMaterial(c.Request.Context(), userID, cohortID, materialID)
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+	writeOK(c, res)
 }
 
-func (h *Handler) Delete(c *gin.Context) {
-	id, ok := parseID(c)
+// GET /cohorts/:cohortId/me/summary
+func (h *MaterialHandler) MySummary(c *gin.Context) {
+	userID, ok := currentUser(c)
 	if !ok {
 		return
 	}
-	if err := h.svc.Delete(c.Request.Context(), c.GetUint("uid"), id); err != nil {
-		response.Error(c, err)
+	cohortID, err := paramID(c, "cohortId")
+	if err != nil {
+		writeError(c, err)
 		return
 	}
-	c.Status(http.StatusNoContent)
-}
 
-func parseID(c *gin.Context) (uint, bool) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	res, err := h.svc.MySummary(c.Request.Context(), userID, cohortID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, response.Body{Success: false, Message: "invalid id"})
-		return 0, false
+		writeError(c, err)
+		return
 	}
-	return uint(id), true
+	writeOK(c, res)
 }
