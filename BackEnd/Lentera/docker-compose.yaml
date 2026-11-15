@@ -3,10 +3,10 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "8080:8080"          # BE wajib di port 8080 VM
+      - "8080:8080" # BE wajib di port 8080 VM
     env_file: .env
     environment:
-      DATABASE_URL: host=postgres user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} port=5432 sslmode=disable TimeZone=Asia/Jakarta
+      DB_HOST: postgres
       REDIS_ADDR: redis:6379
     depends_on:
       postgres:
@@ -21,6 +21,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -30,18 +32,11 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-
-  # TODO: aktifin kalau PRD butuh upload (Showcase, LinkManager, CertHub, AssetFlow, MemberAtlas)
-  # minio:
-  #   image: minio/minio:latest
-  #   command: server /data --console-address ":9001"
-  #   environment:
-  #     MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
-  #     MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
-  #   volumes: [miniodata:/data]
+    ports:
+      - "127.0.0.1:6379:6379"
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.55.1
     restart: unless-stopped
     volumes:
       - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -49,13 +44,13 @@ services:
       - "127.0.0.1:9090:9090"
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.3.0
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
     volumes: [grafanadata:/var/lib/grafana]
     ports:
-      - "127.0.0.1:3001:3000"   # ssh -L 3001:localhost:3001 ...
+      - "127.0.0.1:3001:3000" # ssh -L 3001:localhost:3001 ...
 
 volumes:
   pgdata:
