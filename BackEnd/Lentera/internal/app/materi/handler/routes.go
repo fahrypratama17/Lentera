@@ -2,13 +2,14 @@ package handler
 
 import "github.com/gin-gonic/gin"
 
-func (h *Handler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerFunc) {
-	g := api.Group("/feature-a", auth)
-	g.GET("", h.List)
-	g.POST("", h.Create)
-	g.GET("/:id", h.GetByID)
-	g.PUT("/:id", h.Update)
-	g.DELETE("/:id", h.Delete)
-	// TODO: route khusus, contoh:
-	// g.PATCH("/:id/status", middleware.RequireRole("manager"), h.ChangeStatus)
+// rg = group yang SUDAH dipasang middleware Auth (JWT)
+func (h *MaterialHandler) RegisterRoutes(rg *gin.RouterGroup) {
+	cohort := rg.Group("/cohorts/:cohortId")
+
+	// materi & progres pribadi (Member & Mentor)
+	cohort.GET("/materials", h.List)
+	cohort.GET("/materials/:materialId", h.Detail)
+	cohort.GET("/me/summary", h.MySummary)
+
+	// nanti: CRUD materi (Mentor), start/submit (Member), review (Mentor)
 }
