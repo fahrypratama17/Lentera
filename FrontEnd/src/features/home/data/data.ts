@@ -6,6 +6,8 @@ import {
   UsersRound,
   ClipboardCheck,
   ChartNoAxesCombined,
+  BookOpenCheck,
+  MessagesSquare,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -58,21 +60,21 @@ export const STEPS: Step[] = [
 
 export const BENEFITS = [
   {
-    icon: Target,
-    title: "Pemantauan tanpa bertanya",
-    text: "Metrik anggota × materi menunjukkan siapa tertinggal pada materi mana, dalam satu pandangan.",
+    icon: BookOpenCheck,
+    title: "Semua Lebih Terorganisir",
+    text: "Materi, tugas, dan pengumpulan tersimpan rapi dalam satu kelas. Tidak perlu lagi mencari informasi di antara tumpukan chat.",
   },
   {
-    icon: UserCheck,
-    title: "Review yang tidak menumpuk",
-    text: "Setiap pengumpulan masuk antrean review. Mentor memutuskan dengan konteks, bukan dari ingatan.",
+    icon: ChartNoAxesCombined,
+    title: "Progres Terlihat Jelas",
+    text: "Pantau siapa yang sudah menyelesaikan tugas, siapa yang belum mulai, dan apa yang masih perlu ditinjau.",
   },
   {
-    icon: BarChart3,
-    title: "Keterlambatan terdeteksi dini",
-    text: "Deadline jadi acuan, bukan pengingat. Progres yang lewat deadline ditandai terpisah.",
+    icon: MessagesSquare,
+    title: "Review Jadi Lebih Mudah",
+    text: "Mentor dapat meninjau hasil pekerjaan dengan lebih terarah, sementara anggota tahu apa yang perlu diperbaiki.",
   },
-];
+] as const;
 
 export const STATS = [
   { label: "Role", num: "2", desc: "Mentor & Member, per cohort." },
