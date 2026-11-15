@@ -12,7 +12,7 @@ const VARIANTS = {
 export function HowTo() {
   return (
     <section
-      id="how-to"
+      id="cara-menggunakan"
       className="bg-background scroll-mt-28 px-4 py-[clamp(3.5rem,7vw,6rem)]"
     >
       <div className="container mx-auto">
