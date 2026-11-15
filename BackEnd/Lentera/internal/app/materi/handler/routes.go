@@ -3,7 +3,7 @@ package handler
 import "github.com/gin-gonic/gin"
 
 func (h *MaterialHandler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerFunc) {
-	cohort := api.Group("/cohorts/:cohortId", auth)
+	cohort := api.Group("/cohorts/:id", auth)
 
 	// materi & progres pribadi (Member & Mentor)
 	cohort.GET("/materials", h.List)

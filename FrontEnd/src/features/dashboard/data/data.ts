@@ -79,4 +79,43 @@ export const mockCohorts: Cohort[] = [
       "Lakukan eksplorasi dataset dan buat visualisasi hasil analisis.",
     tone: "slate",
   },
+  {
+    id: "data-science",
+    title: "Data Science Basics",
+    description: "Python, analisis data, dan visualisasi.",
+    mentorName: "Farhan Akbar",
+    period: "November - Desember 2026",
+    role: "member",
+    memberCount: 14,
+    materialCount: 5,
+    previewQuestion:
+      "Lakukan eksplorasi dataset dan buat visualisasi hasil analisis.",
+    tone: "slate",
+  },
+  {
+    id: "data-science",
+    title: "Data Science Basics",
+    description: "Python, analisis data, dan visualisasi.",
+    mentorName: "Farhan Akbar",
+    period: "November - Desember 2026",
+    role: "member",
+    memberCount: 14,
+    materialCount: 5,
+    previewQuestion:
+      "Lakukan eksplorasi dataset dan buat visualisasi hasil analisis.",
+    tone: "slate",
+  },
+  {
+    id: "data-science",
+    title: "Data Science Basics",
+    description: "Python, analisis data, dan visualisasi.",
+    mentorName: "Farhan Akbar",
+    period: "November - Desember 2026",
+    role: "member",
+    memberCount: 14,
+    materialCount: 5,
+    previewQuestion:
+      "Lakukan eksplorasi dataset dan buat visualisasi hasil analisis.",
+    tone: "slate",
+  },
 ];

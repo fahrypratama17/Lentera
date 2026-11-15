@@ -1,7 +1,6 @@
-import { Sparkles } from "lucide-react"
 import { Card, CardContent } from "@/shared/components/ui/card"
 import { STEPS } from "../data/data"
-import { cn } from "@/lib/utils"
+import { cn } from "cn"
 
 const VARIANTS = {
   tint:   "bg-secondary-light border-secondary-light",

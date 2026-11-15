@@ -1,7 +1,6 @@
 package dto
 
 // GET /cohorts/:cohortId/matrix
-// GET /cohorts/:cohortId/matrix
 type MatrixQuery struct {
 	Q          string `form:"q" binding:"omitempty,max=100"`                                                // cari nama member
 	MaterialID uint   `form:"material_id" binding:"omitempty,gt=0"`                                         // tampilkan 1 kolom materi saja
