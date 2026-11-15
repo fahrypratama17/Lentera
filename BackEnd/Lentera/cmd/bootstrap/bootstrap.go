@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/config"
+	cohortHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/handler"
+	cohortRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/repository"
+	cohortService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/service"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/contract"
 	materialHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/handler"
 	materialRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/repository"
@@ -72,6 +75,8 @@ func Run() {
 
 	// ---- modules (DI manual: repo -> service -> handler) ----
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
+	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
+
 	materialHandler.New(materialService.New(materialRepo.New(db), contract.NoopBroadcaster{}, func() time.Time { return time.Now().UTC() })).RegisterRoutes(api, auth)
 	// TODO: modul baru -> tambah 1 baris di sini
 
