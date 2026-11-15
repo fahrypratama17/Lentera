@@ -3,7 +3,9 @@ package jwt
 import (
 	"errors"
 	"time"
-
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	gojwt "github.com/golang-jwt/jwt/v5"
 )
 
@@ -33,4 +35,19 @@ func Parse(secret, token string) (*Claims, error) {
 		return nil, errors.New("invalid token")
 	}
 	return c, nil
+}
+
+func GenerateRefreshToken() (rawToken string, tokenHash string, err error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", "", err
+	}
+	rawToken = hex.EncodeToString(b)
+	tokenHash = HashToken(rawToken)
+	return rawToken, tokenHash, nil
+}
+
+func HashToken(rawToken string) string {
+	sum := sha256.Sum256([]byte(rawToken))
+	return hex.EncodeToString(sum[:])
 }
