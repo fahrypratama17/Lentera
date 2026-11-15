@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	"hackathon-be/internal/app/feature_b/contract"
-	"hackathon-be/internal/app/feature_b/dto"
-	"hackathon-be/internal/realtime"
-	"hackathon-be/pkg/response"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/contract"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/dto"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/realtime"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"

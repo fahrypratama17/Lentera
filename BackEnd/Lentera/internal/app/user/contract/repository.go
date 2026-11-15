@@ -3,7 +3,7 @@ package contract
 import (
 	"context"
 
-	"hackathon-be/internal/app/user/entity"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
 )
 
 type UserRepository interface {

@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"hackathon-be/internal/app/feature_b/contract"
-	"hackathon-be/internal/app/feature_b/dto"
-	"hackathon-be/pkg/response"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/contract"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/dto"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )

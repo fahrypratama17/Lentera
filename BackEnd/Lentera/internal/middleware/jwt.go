@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"hackathon-be/pkg/jwt"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

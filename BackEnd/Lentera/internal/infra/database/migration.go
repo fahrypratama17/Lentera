@@ -1,9 +1,9 @@
 package database
 
 import (
-	featureAEntity "hackathon-be/internal/app/feature_a/entity"
-	featureBEntity "hackathon-be/internal/app/feature_b/entity"
-	userEntity "hackathon-be/internal/app/user/entity"
+	featureAEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/entity"
+	featureBEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/entity"
+	userEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
 
 	"gorm.io/gorm"
 )

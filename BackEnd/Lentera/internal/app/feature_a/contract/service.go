@@ -3,7 +3,7 @@ package contract
 import (
 	"context"
 
-	"hackathon-be/internal/app/feature_a/dto"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/dto"
 )
 
 type FeatureAService interface {

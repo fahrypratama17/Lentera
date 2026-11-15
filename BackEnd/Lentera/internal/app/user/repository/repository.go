@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"hackathon-be/internal/app/user/contract"
-	"hackathon-be/internal/app/user/entity"
-	"hackathon-be/pkg/response"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/contract"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 
 	"gorm.io/gorm"
 )

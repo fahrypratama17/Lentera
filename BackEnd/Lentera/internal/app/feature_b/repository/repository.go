@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 
-	"hackathon-be/internal/app/feature_b/contract"
-	"hackathon-be/internal/app/feature_b/dto"
-	"hackathon-be/internal/app/feature_b/entity"
-	"hackathon-be/pkg/response"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/contract"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/dto"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/entity"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 
 	"gorm.io/gorm"
 )

@@ -1,6 +1,6 @@
 package main
 
-import "hackathon-be/cmd/bootstrap"
+import "github.com/fahrypratama17/Lentera/BackEnd/Lentera/cmd/bootstrap"
 
 func main() {
 	bootstrap.Run()

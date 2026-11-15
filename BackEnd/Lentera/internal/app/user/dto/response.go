@@ -1,6 +1,6 @@
 package dto
 
-import "hackathon-be/internal/app/user/entity"
+import "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
 
 type UserResponse struct {
 	ID   uint   `json:"id"`

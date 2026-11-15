@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"hackathon-be/internal/app/feature_b/entity"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/entity"
 )
 
 type FeatureBResponse struct {

@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"hackathon-be/internal/app/user/contract"
-	"hackathon-be/internal/app/user/dto"
-	"hackathon-be/pkg/response"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/contract"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/dto"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )
