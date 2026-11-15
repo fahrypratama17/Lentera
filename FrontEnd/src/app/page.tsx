@@ -1,3 +1,6 @@
+import HomeContainer from "@/features/home/container/HomeContainer";
+import React from "react";
+
 export default function Home() {
-  return <h1>hALO</h1>;
+  return <HomeContainer />;
 }
