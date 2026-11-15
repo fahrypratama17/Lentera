@@ -48,9 +48,14 @@ services:
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
-    volumes: [grafanadata:/var/lib/grafana]
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro # ← TAMBAH
+      - ./deploy/grafana/dashboards:/etc/grafana/dashboards:ro # ← TAMBAH
+    depends_on:
+      - prometheus
     ports:
-      - "127.0.0.1:3001:3000" # ssh -L 3001:localhost:3001 ...
+      - "127.0.0.1:3001:3000"
 
 volumes:
   pgdata:
