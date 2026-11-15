@@ -8,6 +8,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/shared/components/ui/sidebar";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ const pageTitles: Record<string, string> = {
 };
 
 export default function DashboardShell({ children }: DashboardShellProps) {
+  const { logout, isPending: logoutPending, error: logoutError } = useLogout();
   const pathname = usePathname();
 
   const currentPage = Object.keys(pageTitles).find(
@@ -35,7 +37,11 @@ export default function DashboardShell({ children }: DashboardShellProps) {
 
   return (
     <SidebarProvider>
-      <AppSidebar onLogout={handleLogout} />
+      <AppSidebar
+        onLogout={logout}
+        logoutPending={logoutPending}
+        logoutError={logoutError}
+      />
 
       <SidebarInset className="bg-surface min-w-0">
         <header className="border-border sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b bg-white/95 px-5 backdrop-blur-md sm:px-8">
