@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useDashboardController } from "@/features/dashboard/hooks/useDashboardController";
-import { buildCohortSlug } from "../utils/slug";
+import { buildCohortSlug } from "../utils/slugify";
 
 type CohortItem = ReturnType<
   typeof useDashboardController
@@ -44,7 +44,7 @@ export const useCohortController = () => {
   };
 
   const openCohort = (cohort: CohortItem) => {
-    router.push(`/cohort/${buildCohortSlug(cohort.title, cohort.id)}`);
+    router.push(`/cohort/${buildCohortSlug(cohort.title, cohort.id)}/materi`);
     };
 
   return {
