@@ -1,15 +1,17 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { signInAction, signUpAction } from "@/shared/repository/auth/action";
+import { signInAction, signUpAction } from "./action";
+
 import type {
   SignInDto,
   SignUpDto,
+  SignInResponseDto,
   AuthResponseDto,
-} from "@/shared/repository/auth/dto";
+} from "./dto";
 
 export function useSignInMutation() {
-  return useMutation<AuthResponseDto, Error, SignInDto>({
+  return useMutation<SignInResponseDto, Error, SignInDto>({
     mutationKey: ["auth", "signIn"],
     mutationFn: signInAction,
     retry: false,

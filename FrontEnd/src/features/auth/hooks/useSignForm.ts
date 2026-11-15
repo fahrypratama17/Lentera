@@ -61,7 +61,18 @@ export function useSignForm(mode: SignMode) {
           password: values.password,
         },
         {
-          onSuccess: () => {
+          onSuccess: (response) => {
+            const token = response.data?.access_token;
+
+            if (!token) {
+              form.setError("root", {
+                message: "Access token tidak ditemukan.",
+              });
+              return;
+            }
+
+            localStorage.setItem("lentera_token", token);
+
             router.replace("/dashboard");
             router.refresh();
           },

@@ -3,13 +3,14 @@ import { api } from "@/shared/lib/axios";
 import type {
   SignInDto,
   SignUpDto,
+  SignInResponseDto,
   AuthResponseDto,
-} from "@/shared/repository/auth/dto";
+} from "./dto";
 
 export async function signInAction(
   payload: SignInDto,
-): Promise<AuthResponseDto> {
-  const { data } = await api.post<AuthResponseDto>("/auth/login", payload);
+): Promise<SignInResponseDto> {
+  const { data } = await api.post<SignInResponseDto>("/auth/login", payload);
 
   return data;
 }

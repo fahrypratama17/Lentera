@@ -2,19 +2,41 @@
 
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { isAxiosError } from "axios";
 
-const STORAGE_KEY = "studytrack-profile-demo";
+import { useMyProfileQuery } from "@/shared/repository/profile/query";
+import type { ProfileErrorDto } from "@/shared/repository/profile/dto";
 
-const demoUser = {
-  name: "Pengguna Demo",
-  email: "demo@example.com",
-};
+function getErrorMessage(error: unknown): string {
+  if (isAxiosError<ProfileErrorDto>(error)) {
+    if (error.response?.status === 401) {
+      return "Sesi login tidak valid atau telah berakhir. Silakan login kembali.";
+    }
+
+    if (!error.response) {
+      return "Gagal terhubung ke server.";
+    }
+
+    return (
+      error.response.data?.message ??
+      error.response.data?.error ??
+      "Terjadi kesalahan saat mengambil profil."
+    );
+  }
+
+  return error instanceof Error
+    ? error.message
+    : "Terjadi kesalahan yang tidak diketahui.";
+}
 
 export function useProfile() {
-  const [ready, setReady] = useState(false);
+  const profileQuery = useMyProfileQuery();
 
-  const [currentName, setCurrentName] = useState(demoUser.name);
-  const [name, setName] = useState(demoUser.name);
+  const user = profileQuery.data;
+
+  const [localName, setLocalName] = useState<string | null>(null);
+  const [name, setName] = useState("");
+
   const [nameError, setNameError] = useState("");
   const [nameSuccess, setNameSuccess] = useState("");
 
@@ -25,22 +47,25 @@ export function useProfile() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordNotice, setPasswordNotice] = useState("");
 
-  const email = demoUser.email;
-
   useEffect(() => {
-    try {
-      const storedName = localStorage.getItem(STORAGE_KEY);
+    if (!user) return;
 
-      if (storedName) {
-        setCurrentName(storedName);
-        setName(storedName);
-      }
+    const storageKey = `studytrack-profile-name-${user.id}`;
+
+    let storedName: string | null = null;
+
+    try {
+      storedName = localStorage.getItem(storageKey);
     } catch {
 
-    } finally {
-      setReady(true);
     }
-  }, []);
+
+    setLocalName(storedName);
+    setName(storedName ?? user.name);
+  }, [user]);
+
+  const currentName = localName ?? user?.name ?? "";
+  const email = user?.email ?? "";
 
   const initials = currentName
     .trim()
@@ -56,6 +81,11 @@ export function useProfile() {
     setNameError("");
     setNameSuccess("");
 
+    if (!user) {
+      setNameError("Data pengguna belum tersedia.");
+      return;
+    }
+
     const trimmedName = name.trim();
 
     if (trimmedName.length < 2 || trimmedName.length > 100) {
@@ -66,12 +96,14 @@ export function useProfile() {
     if (trimmedName === currentName) return;
 
     try {
-      localStorage.setItem(STORAGE_KEY, trimmedName);
+      localStorage.setItem(`studytrack-profile-name-${user.id}`, trimmedName);
 
-      setCurrentName(trimmedName);
+      setLocalName(trimmedName);
       setName(trimmedName);
 
-      setNameSuccess("Nama berhasil disimpan di browser (mode demo).");
+      setNameSuccess(
+        "Nama tampilan disimpan di browser. Nama akun di server belum berubah.",
+      );
     } catch {
       setNameError("Gagal menyimpan nama di browser.");
     }
@@ -103,19 +135,23 @@ export function useProfile() {
       return;
     }
 
-    // TODO: Integrate with backend.
+    // TODO: Integrasi API perubahan password.
 
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
 
     setPasswordNotice(
-      "Validasi berhasil. Password belum diubah karena fitur ini belum terhubung ke backend.",
+      "Validasi berhasil. Password belum diubah karena belum terhubung ke backend.",
     );
   }
 
   return {
-    ready,
+    ready: !profileQuery.isPending,
+    loading: profileQuery.isPending,
+    loadError: profileQuery.isError ? getErrorMessage(profileQuery.error) : "",
+    reloadProfile: profileQuery.refetch,
+
     currentName,
     email,
     initials,
