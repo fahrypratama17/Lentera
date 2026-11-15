@@ -8,7 +8,7 @@
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "editable": true,
   "refresh": "10s",
   "time": {
@@ -542,7 +542,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "sum by (level) (count_over_time({service=\"api\"} | json [1m]))",
+          "expr": "sum by (level) (count_over_time({service=\"api\", level=~\".+\"} [1m]))",
           "legendFormat": "{{level}}",
           "refId": "A"
         }
@@ -633,7 +633,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{service=\"api\"} | json | level=~\"ERROR|WARN\"",
+          "expr": "{service=\"api\", level=~\"ERROR|WARN\"}",
           "refId": "A",
           "queryType": "range"
         }
@@ -670,7 +670,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{service=\"api\"} | json | msg!=\"request\" | level=\"INFO\"",
+          "expr": "{service=\"api\", level=\"INFO\"} | json | __error__=\"\" | msg!=\"request\"",
           "refId": "A",
           "queryType": "range"
         }
