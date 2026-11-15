@@ -1,13 +1,7 @@
 import { useEffect, useRef } from "react";
 import { BookOpen, UsersRound, X } from "lucide-react";
-
 import { Button } from "@/shared/components/ui/button";
-import type { Cohort } from "@/features/dashboard/types/type";
-
-interface CohortPreviewDialogProps {
-  cohort: Cohort | null;
-  onClose: () => void;
-}
+import { CohortPreviewDialogProps } from "@/features/dashboard/types/type";
 
 const CohortPreviewDialog = ({ cohort, onClose }: CohortPreviewDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);

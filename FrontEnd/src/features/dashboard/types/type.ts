@@ -55,3 +55,8 @@ export const filters: {
   { label: "Mentor", value: "mentor" },
   { label: "Member", value: "member" },
 ];
+
+export interface CohortPreviewDialogProps {
+  cohort: Cohort | null;
+  onClose: () => void;
+}
