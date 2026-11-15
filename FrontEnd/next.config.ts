@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://group2-be.bccdev.id/api/v1/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

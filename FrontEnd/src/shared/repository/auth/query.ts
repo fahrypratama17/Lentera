@@ -12,6 +12,7 @@ export function useSignInMutation() {
   return useMutation<AuthResponseDto, Error, SignInDto>({
     mutationKey: ["auth", "signIn"],
     mutationFn: signInAction,
+    retry: false,
   });
 }
 
@@ -19,5 +20,6 @@ export function useSignUpMutation() {
   return useMutation<AuthResponseDto, Error, SignUpDto>({
     mutationKey: ["auth", "signUp"],
     mutationFn: signUpAction,
+    retry: false,
   });
 }

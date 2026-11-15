@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import type { SignFormValues, SignMode } from "../types/type";
-import type { AuthResponseDto } from "@/shared/repository/auth/dto";
+import type { AuthErrorDto } from "@/shared/repository/auth/dto";
 import { createSignSchema } from "@/shared/schemas/sign.schema";
 import {
   useSignInMutation,
@@ -15,13 +15,15 @@ import {
 function getErrorMessage(error: unknown): string | null {
   if (!error) return null;
 
-  if (isAxiosError<AuthResponseDto>(error)) {
+  if (isAxiosError<AuthErrorDto>(error)) {
+    if (!error.response) {
+      return "Gagal terhubung ke server.";
+    }
+
     return (
-      error.response?.data?.error ??
-      error.response?.data?.message ??
-      (error.response
-        ? "Terjadi kesalahan. Silakan coba lagi."
-        : "Gagal terhubung ke server.")
+      error.response.data?.error ??
+      error.response.data?.message ??
+      "Terjadi kesalahan. Silakan coba lagi."
     );
   }
 
@@ -47,39 +49,61 @@ export function useSignForm(mode: SignMode) {
     mode: "onBlur",
   });
 
-  const onSubmit: SubmitHandler<SignFormValues> = async (values) => {
-    try {
-      if (mode === "signIn") {
-        await signInMutation.mutateAsync({
+  const onSubmit: SubmitHandler<SignFormValues> = (values) => {
+    if (mode === "signIn") {
+      if (signInMutation.isPending) return;
+
+      signInMutation.reset();
+
+      signInMutation.mutate(
+        {
           email: values.email.trim(),
           password: values.password,
-        });
+        },
+        {
+          onSuccess: () => {
+            router.replace("/dashboard");
+            router.refresh();
+          },
+        },
+      );
 
-        router.replace("/dashboard");
-        router.refresh();
-        return;
-      }
+      return;
+    }
 
-      await signUpMutation.mutateAsync({
-        userName: values.userName.trim(),
-        email: values.email.trim(),
-        password: values.password,
-      });
+    if (signUpMutation.isPending) return;
 
-      form.reset();
-    } catch {}
+    signUpMutation.reset();
+
+    signUpMutation.mutate(
+      {
+        Name: values.userName.trim(),
+        Email: values.email.trim(),
+        Password: values.password,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+        },
+      },
+    );
   };
 
   const mutation = mode === "signIn" ? signInMutation : signUpMutation;
 
+  const resetFeedback = () => {
+    mutation.reset();
+  };
+
   return {
     form,
     onSubmit,
-    isPending: form.formState.isSubmitting || mutation.isPending,
+    isPending: mutation.isPending,
     error: getErrorMessage(mutation.error),
     success:
       mode === "signUp" && signUpMutation.isSuccess
         ? "Pendaftaran berhasil! Silakan masuk menggunakan akun baru."
         : null,
+    resetFeedback,
   };
 }
