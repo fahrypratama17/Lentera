@@ -8,6 +8,9 @@ import CreateCohortDialog from "@/shared/components/CreateCohortDialog";
 import CohortPreviewDialog from "@/features/dashboard/components/CohortPreviewDialog";
 import { useDashboardController } from "@/features/dashboard/hooks/useDashboardController";
 import CohortEmptyState from "@/shared/components/CohortEmptyState";
+import { Button } from "@base-ui/react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 const Dashboard = () => {
   const {
@@ -33,12 +36,13 @@ const Dashboard = () => {
       <section id="classes" className="flex scroll-mt-24 flex-col gap-6">
         <DashboardHeader />
 
-        <CohortToolbar
-          filter={filter}
-          onFilterChange={setFilter}
-          search={search}
-          onSearchChange={setSearch}
-        />
+        <Link
+          href="/cohort"
+          className="text-sm-semibold text-secondary hover:text-primary flex cursor-pointer items-center justify-end gap-2 rounded-lg"
+        >
+          Lihat Semua
+          <ArrowRight className="size-4" />
+        </Link>
 
         {filteredCohorts.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
