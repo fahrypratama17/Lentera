@@ -7,6 +7,7 @@ import { useNavbar } from "@/shared/hooks/use-navbar";
 import { NAV_LINKS } from "@/features/home/data/data";
 import { cn } from "cn";
 import Image from "next/image";
+import { handleSectionClick } from "@/features/home/hooks/useNavbar";
 
 export function Navbar() {
   const { scrolled, menuOpen, toggleMenu, closeMenu } = useNavbar();
@@ -38,6 +39,7 @@ export function Navbar() {
             <Link
               key={l.href}
               href={l.href}
+              onClick={(e) => handleSectionClick(e, l.href, closeMenu)}
               className="text-secondary-text hover:bg-secondary-light hover:text-primary focus-visible:ring-ring rounded-full px-4 py-2 text-base font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {l.label}
@@ -79,7 +81,7 @@ export function Navbar() {
             <Link
               key={l.href}
               href={l.href}
-              onClick={closeMenu}
+              onClick={(e) => handleSectionClick(e, l.href, closeMenu)}
               className="text-secondary-text hover:bg-secondary-light hover:text-primary rounded-xl px-4 py-3 text-base font-semibold transition-colors"
             >
               {l.label}
