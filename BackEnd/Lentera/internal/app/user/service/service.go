@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/contract"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/dto"
@@ -13,19 +16,31 @@ import (
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/utils"
 )
 
+const (
+	accessTokenTTL  = 15 * time.Minute
+	refreshTokenTTL = 7 * 24 * time.Hour
+)
+
 type service struct {
 	repo      contract.UserRepository
 	jwtSecret string
 }
 
 func New(repo contract.UserRepository, jwtSecret string) contract.UserService {
-	return &service{repo: repo, jwtSecret: jwtSecret}
+	return &service{
+		repo:      repo,
+		jwtSecret: jwtSecret,
+	}
 }
 
-func (s *service) Register(ctx context.Context, req dto.RegisterRequest) (*dto.UserResponse, error) {
+func (s *service) Register(ctx context.Context, req dto.RegisterRequest) (*dto.AuthResponse, error) {
 	email := strings.ToLower(strings.TrimSpace(req.Email))
 
-	if existing, _ := s.repo.FindByEmail(ctx, email); existing != nil {
+	existing, err := s.repo.FindByEmail(ctx, email)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+	if existing != nil {
 		return nil, response.ErrConflict
 	}
 
@@ -41,52 +56,103 @@ func (s *service) Register(ctx context.Context, req dto.RegisterRequest) (*dto.U
 	}
 
 	if err := s.repo.Create(ctx, user); err != nil {
-		return nil, response.ErrConflict
+		return nil, err
 	}
 
-	return &dto.UserResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-	}, nil
+	return s.issueTokens(ctx, *user)
 }
 
 func (s *service) Login(ctx context.Context, req dto.LoginRequest) (*dto.AuthResponse, error) {
 	email := strings.ToLower(strings.TrimSpace(req.Email))
 
-	u, err := s.repo.FindByEmail(ctx, email)
-	if err != nil || u == nil {
+	user, err := s.repo.FindByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.ErrUnauthorized
+		}
+		return nil, err
+	}
+
+	if !utils.CheckPassword(req.Password, user.PasswordHash) {
 		return nil, response.ErrUnauthorized
 	}
 
-	if !utils.CheckPassword(req.Password, u.PasswordHash) {
+	return s.issueTokens(ctx, *user)
+}
+
+func (s *service) RefreshToken(ctx context.Context, req dto.RefreshTokenRequest) (*dto.AuthResponse, error) {
+	tokenHash := jwt.HashToken(strings.TrimSpace(req.RefreshToken))
+
+	rt, err := s.repo.FindRefreshTokenByHash(ctx, tokenHash)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.ErrUnauthorized
+		}
+		return nil, err
+	}
+
+	if rt.Revoked || time.Now().After(rt.ExpiresAt) {
 		return nil, response.ErrUnauthorized
 	}
 
-	token, err := jwt.Sign(s.jwtSecret, u.ID, "", 24*time.Hour)
+	// Token rotation: cabut token lama sebelum menerbitkan pasangan token baru
+	if err := s.repo.RevokeRefreshToken(ctx, tokenHash); err != nil {
+		return nil, err
+	}
+
+	user, err := s.repo.FindByID(ctx, rt.UserID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.ErrUnauthorized
+		}
+		return nil, err
+	}
+
+	return s.issueTokens(ctx, *user)
+}
+
+func (s *service) Logout(ctx context.Context, req dto.RefreshTokenRequest) error {
+	tokenHash := jwt.HashToken(strings.TrimSpace(req.RefreshToken))
+	return s.repo.RevokeRefreshToken(ctx, tokenHash)
+}
+
+func (s *service) Me(ctx context.Context, userID uint) (*dto.UserResponse, error) {
+	user, err := s.repo.FindByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, response.ErrNotFound
+		}
+		return nil, err
+	}
+
+	res := dto.FromUser(*user)
+	return &res, nil
+}
+
+func (s *service) issueTokens(ctx context.Context, user entity.User) (*dto.AuthResponse, error) {
+	accessToken, err := jwt.Sign(s.jwtSecret, user.ID, "", accessTokenTTL)
 	if err != nil {
 		return nil, err
 	}
 
-	return &dto.AuthResponse{
-		Token: token,
-		User: dto.UserResponse{
-			ID:    u.ID,
-			Name:  u.Name,
-			Email: u.Email,
-		},
-	}, nil
-}
-
-func (s *service) Me(ctx context.Context, userID uint) (*dto.UserResponse, error) {
-	u, err := s.repo.FindByID(ctx, userID)
-	if err != nil || u == nil {
-		return nil, response.ErrNotFound
+	rawRefresh, refreshHash, err := jwt.GenerateRefreshToken()
+	if err != nil {
+		return nil, err
 	}
 
-	return &dto.UserResponse{
-		ID:    u.ID,
-		Name:  u.Name,
-		Email: u.Email,
+	rt := &entity.RefreshToken{
+		UserID:    user.ID,
+		TokenHash: refreshHash,
+		ExpiresAt: time.Now().Add(refreshTokenTTL),
+	}
+
+	if err := s.repo.CreateRefreshToken(ctx, rt); err != nil {
+		return nil, err
+	}
+
+	return &dto.AuthResponse{
+		AccessToken:  accessToken,
+		RefreshToken: rawRefresh,
+		User:         dto.FromUser(user),
 	}, nil
 }

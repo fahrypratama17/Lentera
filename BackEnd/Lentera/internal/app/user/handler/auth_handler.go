@@ -45,3 +45,30 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 	response.OK(c, http.StatusOK, res)
 }
+
+func (h *Handler) RefreshToken(c *gin.Context) {
+	var req dto.RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	res, err := h.svc.RefreshToken(c.Request.Context(), req)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, http.StatusOK, res)
+}
+
+func (h *Handler) Logout(c *gin.Context) {
+	var req dto.RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.ValidationError(c, err)
+		return
+	}
+	if err := h.svc.Logout(c.Request.Context(), req); err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, http.StatusOK, gin.H{"message": "logged out"})
+}
