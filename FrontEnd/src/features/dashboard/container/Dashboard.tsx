@@ -2,23 +2,17 @@
 
 import DashboardBanner from "@/features/dashboard/components/DashboardBanner";
 import DashboardHeader from "@/features/dashboard/components/DashboardHeader";
-import CohortToolbar from "@/shared/components/CohortToolbar";
 import CohortCard from "@/shared/components/CohortCard";
 import CreateCohortDialog from "@/shared/components/CreateCohortDialog";
 import CohortPreviewDialog from "@/features/dashboard/components/CohortPreviewDialog";
 import { useDashboardController } from "@/features/dashboard/hooks/useDashboardController";
 import CohortEmptyState from "@/shared/components/CohortEmptyState";
-import { Button } from "@base-ui/react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const Dashboard = () => {
   const {
     filteredCohorts,
-    search,
-    setSearch,
-    filter,
-    setFilter,
     createCohort,
     resetFilters,
     createOpen,
