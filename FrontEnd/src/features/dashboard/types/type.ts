@@ -60,3 +60,7 @@ export interface CohortPreviewDialogProps {
   cohort: Cohort | null;
   onClose: () => void;
 }
+
+export interface CohortEmptyStateProps {
+  onReset: () => void;
+}
