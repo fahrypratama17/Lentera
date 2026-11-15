@@ -10,7 +10,7 @@ import (
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 )
 
-// POST /cohorts/:cohortId/materials/upload
+// POST /cohorts/:id/materials/upload
 // Form-Data:
 //   - purpose: "material" (Mentor) | "submission" (Member)
 //   - file:    <file .pdf maksimal 10MB>
@@ -19,7 +19,7 @@ func (h *MaterialHandler) UploadPDF(c *gin.Context) {
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return

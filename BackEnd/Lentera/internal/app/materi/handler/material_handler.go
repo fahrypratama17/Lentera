@@ -18,7 +18,7 @@ func New(svc contract.MaterialService) *MaterialHandler {
 	return &MaterialHandler{svc: svc}
 }
 
-// GET /cohorts/:cohortId/materials?q=&status=&late=
+// GET /cohorts/:id/materials?q=&status=&late=
 func (h *MaterialHandler) List(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -44,7 +44,7 @@ func (h *MaterialHandler) List(c *gin.Context) {
 	writeOK(c, res)
 }
 
-// GET /cohorts/:cohortId/materials/:materialId
+// GET /cohorts/:id/materials/:materialId
 func (h *MaterialHandler) Detail(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -69,7 +69,7 @@ func (h *MaterialHandler) Detail(c *gin.Context) {
 	writeOK(c, res)
 }
 
-// GET /cohorts/:cohortId/me/summary
+// GET /cohorts/:id/me/summary
 func (h *MaterialHandler) MySummary(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -91,7 +91,7 @@ func (h *MaterialHandler) MySummary(c *gin.Context) {
 
 // ───────────────── CRUD materi (Mentor) ─────────────────
 
-// POST /cohorts/:cohortId/materials
+// POST /cohorts/:id/materials
 func (h *MaterialHandler) Create(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -117,7 +117,7 @@ func (h *MaterialHandler) Create(c *gin.Context) {
 	writeCreated(c, res)
 }
 
-// PATCH /cohorts/:cohortId/materials/:materialId
+// PATCH /cohorts/:id/materials/:materialId
 func (h *MaterialHandler) Update(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -148,7 +148,7 @@ func (h *MaterialHandler) Update(c *gin.Context) {
 	writeOK(c, res)
 }
 
-// DELETE /cohorts/:cohortId/materials/:materialId
+// DELETE /cohorts/:id/materials/:materialId
 func (h *MaterialHandler) Delete(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
@@ -172,7 +172,7 @@ func (h *MaterialHandler) Delete(c *gin.Context) {
 	writeNoContent(c)
 }
 
-// PUT /cohorts/:cohortId/materials/order
+// PUT /cohorts/:id/materials/order
 func (h *MaterialHandler) Reorder(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {

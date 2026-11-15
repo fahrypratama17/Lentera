@@ -36,3 +36,10 @@ func (h *ReviewHandler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerFun
 	cohort.POST("/progress/:progressId/request-revision", h.RequestRevision)
 	cohort.POST("/progress/:progressId/reopen", h.Reopen)
 }
+
+func (h *MonitoringHandler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerFunc) {
+	cohort := api.Group("/cohorts/:id", auth)
+	cohort.GET("/dashboard", h.Dashboard)
+	cohort.GET("/matrix", h.Matrix)
+	cohort.GET("/members/:userId/progress", h.MemberProgress)
+}

@@ -9,13 +9,13 @@ import (
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 )
 
-// POST /cohorts/:cohortId/materials/:materialId/start
+// POST /cohorts/:id/materials/:materialId/start
 func (h *MaterialHandler) Start(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -34,13 +34,13 @@ func (h *MaterialHandler) Start(c *gin.Context) {
 	writeOK(c, res)
 }
 
-// POST /cohorts/:cohortId/materials/:materialId/submit
+// POST /cohorts/:id/materials/:materialId/submit
 func (h *MaterialHandler) Submit(c *gin.Context) {
 	userID, ok := currentUser(c)
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
@@ -65,13 +65,13 @@ func (h *MaterialHandler) Submit(c *gin.Context) {
 	writeOK(c, res)
 }
 
-// POST /cohorts/:cohortId/materials/:materialId/submissions/:userId/review
+// POST /cohorts/:id/materials/:materialId/submissions/:userId/review
 func (h *MaterialHandler) Review(c *gin.Context) {
 	mentorID, ok := currentUser(c)
 	if !ok {
 		return
 	}
-	cohortID, err := paramID(c, "cohortId")
+	cohortID, err := paramID(c, "id")
 	if err != nil {
 		writeError(c, err)
 		return
