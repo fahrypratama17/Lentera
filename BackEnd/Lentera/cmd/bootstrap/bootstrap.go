@@ -11,12 +11,13 @@ import (
 	"time"
 
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/config"
-	featureAHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/handler"
-	featureARepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/repository"
-	featureAService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/service"
-	featureBHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/handler"
-	featureBRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/repository"
-	featureBService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/service"
+	cohortHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/handler"
+	cohortRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/repository"
+	cohortService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/service"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/contract"
+	materialHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/handler"
+	materialRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/repository"
+	materialService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/service"
 	userHandler "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/handler"
 	userRepo "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/repository"
 	userService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/service"
@@ -50,6 +51,7 @@ func Run() {
 		log.Warn("redis unavailable, cache disabled", "error", err)
 		rdb = nil
 	}
+	_ = rdb // supaya bisa di-capture closure di bawah
 	hub := realtime.NewHub()
 
 	// ---- http ----
@@ -73,8 +75,9 @@ func Run() {
 
 	// ---- modules (DI manual: repo -> service -> handler) ----
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
-	featureAHandler.New(featureAService.New(featureARepo.New(db), db, rdb, hub)).RegisterRoutes(api, auth)
-	featureBHandler.New(featureBService.New(featureBRepo.New(db), db, rdb, hub)).RegisterRoutes(api, auth)
+	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
+
+	materialHandler.New(materialService.New(materialRepo.New(db), contract.NoopBroadcaster{}, func() time.Time { return time.Now().UTC() })).RegisterRoutes(api, auth)
 	// TODO: modul baru -> tambah 1 baris di sini
 
 	api.GET("/ws", auth, hub.ServeWS)

@@ -36,7 +36,7 @@ const navigation = [
   },
   {
     title: "Kelas Saya",
-    href: "/class",
+    href: "/cohort",
     icon: BookOpen,
   },
   {

@@ -1,18 +1,27 @@
 package database
 
 import (
-	featureAEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_a/entity"
-	featureBEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/feature_b/entity"
+	cohortEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/cohort/entity"
+	materiEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/materi/entity"
 	userEntity "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
-
 	"gorm.io/gorm"
 )
 
 func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
+		// user (Mone)
 		&userEntity.User{},
-		&featureAEntity.FeatureA{},
-		&featureBEntity.FeatureB{},
+		&userEntity.RefreshToken{},
+
+		// cohort (Mone)
+		&cohortEntity.Cohort{},
+		&cohortEntity.Membership{},
+		&cohortEntity.Invitation{},
+
+		// materi (Neval) — Material dulu, baru Progress (ada FK ke materials)
+		&materiEntity.Material{},
+		&materiEntity.Progress{},
+
 		// TODO: daftarin entity baru di sini
 	)
 }
