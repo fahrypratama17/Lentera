@@ -15,7 +15,7 @@ interface DashboardShellProps {
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/class": "Kelas Saya",
+  "/cohort": "Kelas Saya",
   "/tasks": "Tugas",
   "/profile": "Profil",
 };
