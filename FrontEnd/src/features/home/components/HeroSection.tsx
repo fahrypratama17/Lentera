@@ -5,7 +5,7 @@ import Link from "next/link"
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden bg-background px-4 pt-14 pb-28 sm:pt-20 sm:pb-32 mx-auto">
+    <section id="top" className="relative overflow-hidden bg-background px-4 pt-40 md:pt-32 pb-28 mx-auto">
       <div className="flex items-center justify-center">
         <div className="w-full container overflow-hidden bg-secondary-light relative z-10 flex flex-col items-center gap-6 text-center px-4 py-30 rounded-3xl">
 
