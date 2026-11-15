@@ -67,20 +67,22 @@ function AuthInput<T extends FieldValues>({
             />
 
             {isPassword && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                disabled={disabled || field.disabled}
-                onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={
-                  showPassword ? "Sembunyikan password" : "Tampilkan password"
-                }
-                aria-pressed={showPassword}
-                className="text-secondary-text hover:bg-secondary-light hover:text-primary absolute top-1/2 right-1 -translate-y-1/2 rounded-lg"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </Button>
+              <div className="absolute inset-y-0 right-1 flex items-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  disabled={disabled || field.disabled}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={
+                    showPassword ? "Sembunyikan password" : "Tampilkan password"
+                  }
+                  aria-pressed={showPassword}
+                  className="text-secondary-text hover:bg-secondary-light hover:text-primary h-9 w-9 cursor-pointer rounded-lg p-0 active:scale-100"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </Button>
+              </div>
             )}
           </div>
 
