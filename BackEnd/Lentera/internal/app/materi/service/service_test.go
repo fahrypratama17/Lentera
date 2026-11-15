@@ -598,3 +598,17 @@ func TestReorderMaterials_MemberDitolak(t *testing.T) {
 		t.Errorf("tidak boleh ada broadcast, got %v", bc.sent)
 	}
 }
+
+func (f *fakeRepo) SaveProgress(_ context.Context, p *entity.Progress) error {
+	for i := range f.progresses {
+		if f.progresses[i].MaterialID == p.MaterialID && f.progresses[i].UserID == p.UserID {
+			f.progresses[i] = *p
+			return nil
+		}
+	}
+	if p.ID == 0 {
+		p.ID = uint(100 + len(f.progresses))
+	}
+	f.progresses = append(f.progresses, *p)
+	return nil
+}

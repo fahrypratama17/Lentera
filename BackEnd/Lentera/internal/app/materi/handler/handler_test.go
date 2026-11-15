@@ -372,3 +372,40 @@ func TestMaterialHandler_Create_MeneruskanBody(t *testing.T) {
 		t.Errorf("body tidak diteruskan dengan benar: %+v", svc.gotCreate)
 	}
 }
+
+func (f *fakeService) StartMaterial(_ context.Context, userID, cohortID, materialID uint) (*dto.ProgressResponse, error) {
+	f.gotUserID, f.gotCohortID = userID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.ProgressResponse{UserID: userID, MaterialID: materialID, Status: "in_progress"}, nil
+}
+
+func (f *fakeService) SubmitMaterial(_ context.Context, userID, cohortID, materialID uint, _ dto.SubmitMaterialRequest) (*dto.ProgressResponse, error) {
+	f.gotUserID, f.gotCohortID = userID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.ProgressResponse{UserID: userID, MaterialID: materialID, Status: "submitted"}, nil
+}
+
+func (f *fakeService) ReviewSubmission(_ context.Context, mentorID, cohortID, materialID, targetUserID uint, _ dto.ReviewSubmissionRequest) (*dto.ProgressResponse, error) {
+	f.gotUserID, f.gotCohortID = mentorID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.ProgressResponse{UserID: targetUserID, MaterialID: materialID, Status: "completed"}, nil
+}
+
+func (f *fakeService) UploadPDF(_ context.Context, userID, cohortID uint, _, originalName string, data []byte) (*dto.UploadedFileResponse, error) {
+	f.gotUserID, f.gotCohortID = userID, cohortID
+	if f.err != nil {
+		return nil, f.err
+	}
+	return &dto.UploadedFileResponse{
+		URL:         "https://example.supabase.co/storage/v1/object/public/lentera-files/" + originalName,
+		FileName:    originalName,
+		ContentType: "application/pdf",
+		Size:        int64(len(data)),
+	}, nil
+}
