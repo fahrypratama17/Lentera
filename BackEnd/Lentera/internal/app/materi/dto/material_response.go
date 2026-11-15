@@ -64,3 +64,8 @@ type UploadedFileResponse struct {
 	ContentType string `json:"content_type"`
 	Size        int64  `json:"size"`
 }
+
+type PaginatedMaterialsResponse struct {
+	Items []MaterialResponse `json:"items"`
+	Meta  PaginationMeta     `json:"meta"`
+}
