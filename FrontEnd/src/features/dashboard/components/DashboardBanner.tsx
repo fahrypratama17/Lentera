@@ -1,4 +1,4 @@
-import { ArrowRight, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import Image from "next/image";
 import { DashboardBannerProps } from "@/features/dashboard/types/type";
@@ -11,11 +11,6 @@ const DashboardBanner = ({ onCreate }: DashboardBannerProps) => {
 
       <div className="relative z-10 flex items-center justify-between gap-6">
         <div className="flex max-w-xl flex-col items-start gap-4">
-          <span className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#D5EDF8] uppercase">
-            <Sparkles className="size-4" />
-            StudyTrack Learning Space
-          </span>
-
           <div className="space-y-2">
             <h1 className="text-2xl-bold sm:text-3xl-bold text-white">
               Selamat Datang Kembali!
@@ -29,7 +24,7 @@ const DashboardBanner = ({ onCreate }: DashboardBannerProps) => {
           <Button
             type="button"
             onClick={onCreate}
-            className="mt-2 h-11 cursor-pointer rounded-xl bg-white px-5 font-bold text-[#1F506D] hover:bg-[#E6F3FB]"
+            className="text-primary hover:bg-secondary-light mt-2 h-11 cursor-pointer rounded-xl bg-white px-5 font-bold"
           >
             <Plus className="size-4" />
             Buat Kelas Baru
@@ -37,7 +32,7 @@ const DashboardBanner = ({ onCreate }: DashboardBannerProps) => {
           </Button>
         </div>
 
-        <div className="hidden shrink-0 items-center justify-center rounded-[28px] border border-white/15 bg-white/10 p-5 backdrop-blur-sm md:flex">
+        <div className="hidden shrink-0 items-center justify-center rounded-[28px] border border-white/20 bg-white/10 p-5 backdrop-blur-sm md:flex">
           <Image
             src="/logo.webp"
             alt="Logo StudyTrack"
