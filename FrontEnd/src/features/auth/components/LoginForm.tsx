@@ -52,8 +52,7 @@ const LoginForm = ({ onSwitch }: LoginFormProps) => {
         <Button
           type="submit"
           size="lg"
-          disabled={isPending}
-          className="text-md-bold bg-primary hover:bg-secondary hover:shadow-secondary/15 h-12 w-full cursor-pointer rounded-xl text-white transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+          className="text-md-bold hover:bg-secondary hover:shadow-secondary/15 bg-primary h-12 w-full cursor-pointer rounded-xl text-white transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
         >
           {isPending ? (
             <>
@@ -74,7 +73,7 @@ const LoginForm = ({ onSwitch }: LoginFormProps) => {
         <button
           type="button"
           onClick={onSwitch}
-          className="text-secondary cursor-pointer font-bold hover:underline"
+          className="text-secondary bg-primary cursor-pointer font-bold hover:underline"
         >
           Daftar sekarang
         </button>

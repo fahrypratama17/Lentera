@@ -89,7 +89,7 @@ const RegisterForm = ({ onSwitch }: RegisterFormProps) => {
         <button
           type="button"
           onClick={onSwitch}
-          className="text-secondary cursor-pointer font-bold hover:underline"
+          className="text-secondary bg-primary cursor-pointer font-bold hover:underline"
         >
           Masuk
         </button>
