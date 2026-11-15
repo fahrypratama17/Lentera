@@ -23,6 +23,7 @@ import (
 	userService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/service"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/cache"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/database"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/storage"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/middleware"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/realtime"
 
@@ -57,6 +58,13 @@ func Run() {
 	_ = rdb // TODO: dipakai untuk cache materi/dashboard
 	hub := realtime.NewHub()
 
+	var uploader contract.FileUploader
+	if cfg.SupabaseURL != "" && cfg.SupabaseServiceKey != "" && cfg.SupabaseBucket != "" {
+		uploader = storage.NewSupabaseStorage(cfg.SupabaseURL, cfg.SupabaseServiceKey, cfg.SupabaseBucket)
+	} else {
+		log.Warn("supabase storage belum dikonfigurasi, endpoint upload PDF dinonaktifkan")
+	}
+
 	// ---- http ----
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
@@ -80,8 +88,10 @@ func Run() {
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
 	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
 
-	now := func() time.Time { return time.Now().UTC() }
-	materialHandler.New(materialService.New(materialRepo.New(db), contract.NoopBroadcaster{}, now)).RegisterRoutes(api, auth)
+now := func() time.Time { return time.Now().UTC() }
+	matRepo := materialRepo.New(db)
+	matSvc := materialService.NewWithUploader(matRepo, uploader, contract.NoopBroadcaster{}, now)
+	materialHandler.New(matSvc).RegisterRoutes(api, auth)
 	materialHandler.NewMonitoring(materialService.NewMonitoring(materialRepo.NewMonitoring(db), now)).RegisterRoutes(api, auth)
 	materialHandler.NewReview(materialService.NewReview(materialRepo.NewReview(db), contract.NoopBroadcaster{}, now)).RegisterRoutes(api, auth)
 	// TODO: modul baru -> tambah 1 baris di sini

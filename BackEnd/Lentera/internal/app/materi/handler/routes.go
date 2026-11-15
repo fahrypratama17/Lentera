@@ -16,15 +16,15 @@ func (h *MaterialHandler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerF
 	cohort.PATCH("/materials/:materialId", h.Update)
 	cohort.DELETE("/materials/:materialId", h.Delete)
 
-}
+	// progres & pengumpulan (Member)
+	cohort.POST("/materials/:materialId/start", h.Start)
+	cohort.POST("/materials/:materialId/submit", h.Submit)
 
-func (h *MonitoringHandler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerFunc) {
-	cohort := api.Group("/cohorts/:id", auth)
+	// review pengumpulan (Mentor)
+	cohort.POST("/materials/:materialId/submissions/:userId/review", h.Review)
 
-	// pemantauan mentor (role dicek di service)
-	cohort.GET("/dashboard", h.Dashboard)
-	cohort.GET("/matrix", h.Matrix)
-	cohort.GET("/members/:userId/progress", h.MemberProgress)
+	// upload file PDF ke Supabase (Mentor: purpose=material, Member: purpose=submission)
+	cohort.POST("/materials/upload", h.UploadPDF)
 }
 
 func (h *ReviewHandler) RegisterRoutes(api *gin.RouterGroup, auth gin.HandlerFunc) {

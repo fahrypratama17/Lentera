@@ -6,7 +6,7 @@ import { Button } from "@/shared/components/ui/button"
 import { useNavbar } from "@/shared/hooks/use-navbar"
 import { Logo } from "../Logo/Logo"
 import { NAV_LINKS } from "@/features/home/data/data"
-import { cn } from "@/lib/utils"
+import { cn } from "cn"
 
 export function Navbar() {
   const { scrolled, menuOpen, toggleMenu, closeMenu } = useNavbar()
