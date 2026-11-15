@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -13,19 +14,29 @@ import (
 )
 
 type materialService struct {
-	repo contract.MaterialRepository
-	rt   contract.Broadcaster
-	now  func() time.Time
+	repo     contract.MaterialRepository
+	uploader contract.FileUploader
+	rt       contract.Broadcaster
+	now      func() time.Time
 }
 
 func New(repo contract.MaterialRepository, rt contract.Broadcaster, now func() time.Time) contract.MaterialService {
+	return NewWithUploader(repo, nil, rt, now)
+}
+
+func NewWithUploader(repo contract.MaterialRepository, uploader contract.FileUploader, rt contract.Broadcaster, now func() time.Time) contract.MaterialService {
 	if rt == nil {
 		rt = contract.NoopBroadcaster{}
 	}
 	if now == nil {
 		now = time.Now
 	}
-	return &materialService{repo: repo, rt: rt, now: now}
+	return &materialService{
+		repo:     repo,
+		uploader: uploader,
+		rt:       rt,
+		now:      now,
+	}
 }
 
 func (s *materialService) ListMaterials(ctx context.Context, userID, cohortID uint, q dto.ListMaterialsQuery) ([]dto.MaterialResponse, error) {
@@ -242,6 +253,9 @@ func (s *materialService) CreateMaterial(ctx context.Context, userID, cohortID u
 		return nil, err
 	}
 
+	slog.InfoContext(ctx, "material created",
+		"actor_id", userID, "cohort_id", cohortID, "material_id", m.ID, "position", m.Position)
+
 	res := toMaterialResponse(m, nil, s.now())
 	s.rt.Broadcast(cohortRoom(cohortID), "material.created", res)
 	s.notifyDashboard(cohortID)
@@ -288,6 +302,13 @@ func (s *materialService) UpdateMaterial(ctx context.Context, userID, cohortID, 
 		return nil, err
 	}
 
+	changed := make([]string, 0, len(fields))
+	for k := range fields {
+		changed = append(changed, k)
+	}
+	slog.InfoContext(ctx, "material updated",
+		"actor_id", userID, "cohort_id", cohortID, "material_id", materialID, "fields", changed)
+
 	m, err := s.repo.GetMaterial(ctx, cohortID, materialID)
 	if err != nil {
 		return nil, err
@@ -308,6 +329,9 @@ func (s *materialService) DeleteMaterial(ctx context.Context, userID, cohortID, 
 		return err
 	}
 
+	slog.InfoContext(ctx, "material deleted",
+		"actor_id", userID, "cohort_id", cohortID, "material_id", materialID)
+
 	s.rt.Broadcast(cohortRoom(cohortID), "material.deleted", map[string]any{"id": materialID})
 	s.notifyDashboard(cohortID)
 	return nil
@@ -321,6 +345,9 @@ func (s *materialService) ReorderMaterials(ctx context.Context, userID, cohortID
 	if err := s.repo.ReorderMaterials(ctx, cohortID, req.MaterialIDs); err != nil {
 		return nil, err
 	}
+
+	slog.InfoContext(ctx, "materials reordered",
+		"actor_id", userID, "cohort_id", cohortID, "count", len(req.MaterialIDs))
 
 	materials, err := s.repo.ListMaterials(ctx, cohortID, "")
 	if err != nil {

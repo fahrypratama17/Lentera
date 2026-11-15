@@ -57,3 +57,15 @@ type PersonalSummary struct {
 	Late           int     `json:"late"`
 	CompletionRate float64 `json:"completion_rate"`
 }
+
+type UploadedFileResponse struct {
+	URL         string `json:"url"`
+	FileName    string `json:"file_name"`
+	ContentType string `json:"content_type"`
+	Size        int64  `json:"size"`
+}
+
+type PaginatedMaterialsResponse struct {
+	Items []MaterialResponse `json:"items"`
+	Meta  PaginationMeta     `json:"meta"`
+}

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -23,8 +24,10 @@ import (
 	userService "github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/service"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/cache"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/database"
+	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/storage"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/middleware"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/realtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,6 +35,7 @@ import (
 func Run() {
 	cfg := config.Load()
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(log)
 
 	// ---- infra ----
 	db, err := database.Connect(cfg.DatabaseURL)
@@ -39,6 +43,8 @@ func Run() {
 		log.Error("db connect failed", "error", err)
 		os.Exit(1)
 	}
+	log.Info("db connected")
+
 	if err := database.Migrate(db); err != nil {
 		log.Error("migrate failed", "error", err)
 		os.Exit(1)
@@ -46,18 +52,29 @@ func Run() {
 	if err := database.Seed(db); err != nil {
 		log.Error("seed failed", "error", err)
 	}
+
 	rdb, err := cache.Connect(cfg.RedisAddr)
 	if err != nil {
 		log.Warn("redis unavailable, cache disabled", "error", err)
 		rdb = nil
 	}
-	_ = rdb // supaya bisa di-capture closure di bawah
+	_ = rdb // TODO: dipakai untuk cache materi/dashboard
 	hub := realtime.NewHub()
+
+	var uploader contract.FileUploader
+	if cfg.SupabaseURL != "" && cfg.SupabaseServiceKey != "" && cfg.SupabaseBucket != "" {
+		uploader = storage.NewSupabaseStorage(cfg.SupabaseURL, cfg.SupabaseServiceKey, cfg.SupabaseBucket)
+	} else {
+		log.Warn("supabase storage belum dikonfigurasi, endpoint upload PDF dinonaktifkan")
+	}
 
 	// ---- http ----
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(gin.Recovery(), middleware.Logger(log), middleware.Metrics(), middleware.CORS(cfg.CORSOrigin))
+
+	corsOrigins := strings.Split(cfg.CORSOrigin, ",")
+	log.Info("cors configured", "origins", corsOrigins)
+	r.Use(gin.Recovery(), middleware.Logger(log), middleware.Metrics(), middleware.CORS(corsOrigins))
 
 	r.GET("/health", func(c *gin.Context) {
 		sqlDB, err := db.DB()
@@ -67,7 +84,7 @@ func Run() {
 		}
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
-	// TODO: r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	// TODO: r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api/v1")
@@ -77,7 +94,12 @@ func Run() {
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
 	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
 
-	materialHandler.New(materialService.New(materialRepo.New(db), contract.NoopBroadcaster{}, func() time.Time { return time.Now().UTC() })).RegisterRoutes(api, auth)
+	now := func() time.Time { return time.Now().UTC() }
+	matRepo := materialRepo.New(db)
+	matSvc := materialService.NewWithUploader(matRepo, uploader, contract.NoopBroadcaster{}, now)
+	materialHandler.New(matSvc).RegisterRoutes(api, auth)
+	materialHandler.NewMonitoring(materialService.NewMonitoring(materialRepo.NewMonitoring(db), now)).RegisterRoutes(api, auth)
+	materialHandler.NewReview(materialService.NewReview(materialRepo.NewReview(db), contract.NoopBroadcaster{}, now)).RegisterRoutes(api, auth)
 	// TODO: modul baru -> tambah 1 baris di sini
 
 	api.GET("/ws", auth, hub.ServeWS)

@@ -48,10 +48,43 @@ services:
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
-    volumes: [grafanadata:/var/lib/grafana]
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro # ← TAMBAH
+      - ./deploy/grafana/dashboards:/etc/grafana/dashboards:ro # ← TAMBAH
+    depends_on:
+      - prometheus
+      - loki
     ports:
-      - "127.0.0.1:3001:3000" # ssh -L 3001:localhost:3001 ...
+      - "127.0.0.1:3001:3000"
+
+
+  loki:
+    image: grafana/loki:3.3.2
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - lokidata:/loki
+
+  promtail:
+    image: grafana/promtail:3.3.2
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./deploy/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - loki
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    restart: unless-stopped
+    command: ["--path.rootfs=/host"]
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
 
 volumes:
   pgdata:
   grafanadata:
+  lokidata:

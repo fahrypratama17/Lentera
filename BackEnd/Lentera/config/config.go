@@ -8,28 +8,31 @@ import (
 )
 
 type Config struct {
-	Port        string
-	DatabaseURL string
-	RedisAddr   string
-	JWTSecret   string
-	CORSOrigin  string
+	Port               string
+	DatabaseURL        string
+	RedisAddr          string
+	JWTSecret          string
+	CORSOrigin         string
+	SupabaseURL        string
+	SupabaseServiceKey string
+	SupabaseBucket     string
 }
 
 func Load() Config {
-	// muat .env ke environment proses (buat go run lokal).
-	// di Docker file .env gak ada di image → error diabaikan, env dari compose yang dipakai.
 	_ = godotenv.Load()
 
 	return Config{
-		Port:        getenv("PORT", "8080"),
-		DatabaseURL: databaseURL(),
-		RedisAddr:   getenv("REDIS_ADDR", "localhost:6379"),
-		JWTSecret:   getenv("JWT_SECRET", "dev-secret-ganti"),
-		CORSOrigin:  getenv("CORS_ORIGIN", "http://localhost:3000"),
+		Port:               getenv("PORT", "8080"),
+		DatabaseURL:        databaseURL(),
+		RedisAddr:          getenv("REDIS_ADDR", "localhost:6379"),
+		JWTSecret:          getenv("JWT_SECRET", "dev-secret-ganti"),
+		CORSOrigin:         getenv("CORS_ORIGIN", "https://group2.bccdev.id"),
+		SupabaseURL:        getenv("SUPABASE_URL", ""),
+		SupabaseServiceKey: getenvFirst([]string{"SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SERVICE_KEY"}, ""),
+		SupabaseBucket:     getenvFirst([]string{"SUPABASE_STORAGE_BUCKET", "SUPABASE_BUCKET"}, "Lentera's Material"),
 	}
 }
 
-// pakai DATABASE_URL kalau di-set, kalau tidak rakit dari POSTGRES_* + DB_*
 func databaseURL() string {
 	if v := os.Getenv("DATABASE_URL"); v != "" {
 		return v
@@ -48,6 +51,15 @@ func databaseURL() string {
 func getenv(k, def string) string {
 	if v := os.Getenv(k); v != "" {
 		return v
+	}
+	return def
+}
+
+func getenvFirst(keys []string, def string) string {
+	for _, k := range keys {
+		if v := os.Getenv(k); v != "" {
+			return v
+		}
 	}
 	return def
 }
