@@ -26,6 +26,7 @@ import (
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/infra/storage"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/middleware"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/realtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -78,7 +79,7 @@ func Run() {
 		}
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
-	// TODO: r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	// TODO: r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api/v1")
@@ -88,7 +89,7 @@ func Run() {
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
 	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
 
-now := func() time.Time { return time.Now().UTC() }
+	now := func() time.Time { return time.Now().UTC() }
 	matRepo := materialRepo.New(db)
 	matSvc := materialService.NewWithUploader(matRepo, uploader, contract.NoopBroadcaster{}, now)
 	materialHandler.New(matSvc).RegisterRoutes(api, auth)
