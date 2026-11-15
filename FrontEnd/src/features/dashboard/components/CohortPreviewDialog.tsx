@@ -1,21 +1,10 @@
-import { useEffect, useRef } from "react";
 import { BookOpen, UsersRound, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { CohortPreviewDialogProps } from "@/features/dashboard/types/type";
+import { useCohortPreviewDialog } from "@/features/dashboard/hooks/useCohortPreviewDialog";
 
 const CohortPreviewDialog = ({ cohort, onClose }: CohortPreviewDialogProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    if (cohort && !dialog.open) {
-      dialog.showModal();
-    } else if (!cohort && dialog.open) {
-      dialog.close();
-    }
-  }, [cohort]);
+  const { dialogRef, closeDialog } = useCohortPreviewDialog(cohort);
 
   return (
     <dialog
@@ -33,19 +22,16 @@ const CohortPreviewDialog = ({ cohort, onClose }: CohortPreviewDialogProps) => {
                     ? "Sebagai Mentor"
                     : "Sebagai Member"}
                 </span>
-
                 <h2 className="text-2xl-bold text-white">{cohort.title}</h2>
-
                 <p className="text-sm text-white/85">
                   Mentor: {cohort.mentorName}
                 </p>
               </div>
-
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={onClose}
+                onClick={closeDialog}
                 aria-label="Tutup"
                 className="cursor-pointer text-white hover:bg-white/15 hover:text-white"
               >
@@ -64,7 +50,6 @@ const CohortPreviewDialog = ({ cohort, onClose }: CohortPreviewDialogProps) => {
                 <UsersRound className="size-4" />
                 {cohort.memberCount} Anggota
               </span>
-
               <span className="flex items-center gap-2">
                 <BookOpen className="size-4" />
                 {cohort.materialCount} Materi
@@ -81,7 +66,6 @@ const CohortPreviewDialog = ({ cohort, onClose }: CohortPreviewDialogProps) => {
               <p className="text-primary mb-2 text-sm font-bold">
                 Preview Materi / Tugas
               </p>
-
               <p className="text-primary-text text-sm leading-relaxed">
                 {cohort.previewQuestion ||
                   "Belum ada materi yang dipublikasikan."}
