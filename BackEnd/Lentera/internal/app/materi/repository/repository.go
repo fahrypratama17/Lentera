@@ -19,7 +19,7 @@ type materialRepository struct {
 	db *gorm.DB
 }
 
-func NewMaterialRepository(db *gorm.DB) contract.MaterialRepository {
+func New(db *gorm.DB) contract.MaterialRepository {
 	return &materialRepository{db: db}
 }
 

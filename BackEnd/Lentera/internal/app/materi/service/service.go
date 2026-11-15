@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -13,11 +14,18 @@ import (
 
 type materialService struct {
 	repo contract.MaterialRepository
+	rt   contract.Broadcaster
 	now  func() time.Time
 }
 
-func NewMaterialService(repo contract.MaterialRepository) contract.MaterialService {
-	return &materialService{repo: repo, now: time.Now}
+func New(repo contract.MaterialRepository, rt contract.Broadcaster, now func() time.Time) contract.MaterialService {
+	if rt == nil {
+		rt = contract.NoopBroadcaster{}
+	}
+	if now == nil {
+		now = time.Now
+	}
+	return &materialService{repo: repo, rt: rt, now: now}
 }
 
 func (s *materialService) ListMaterials(ctx context.Context, userID, cohortID uint, q dto.ListMaterialsQuery) ([]dto.MaterialResponse, error) {
@@ -176,4 +184,163 @@ func (s *materialService) reviewerNames(ctx context.Context, progresses []entity
 		ids = append(ids, *p.ReviewerID)
 	}
 	return s.repo.GetUserNames(ctx, ids)
+}
+
+// ───────────────── helper ─────────────────
+
+func cohortRoom(cohortID uint) string { return fmt.Sprintf("cohort:%d", cohortID) }
+func mentorRoom(cohortID uint) string { return fmt.Sprintf("cohort:%d:mentors", cohortID) }
+
+func (s *materialService) requireMentor(ctx context.Context, cohortID, userID uint) error {
+	role, err := s.repo.GetActiveRole(ctx, cohortID, userID)
+	if err != nil {
+		return err
+	}
+	if role != entity.RoleMentor {
+		return response.ErrForbidden
+	}
+	return nil
+}
+
+// event dashboard cukup sinyal; data dashboard diambil ulang lewat REST
+func (s *materialService) notifyDashboard(cohortID uint) {
+	s.rt.Broadcast(mentorRoom(cohortID), "dashboard.updated", map[string]any{"cohort_id": cohortID})
+}
+
+// ───────────────── CRUD materi (Mentor) ─────────────────
+
+func (s *materialService) CreateMaterial(ctx context.Context, userID, cohortID uint, req dto.CreateMaterialRequest) (*dto.MaterialResponse, error) {
+	if err := s.requireMentor(ctx, cohortID, userID); err != nil {
+		return nil, err
+	}
+
+	title := strings.TrimSpace(req.Title)
+	guide := strings.TrimSpace(req.Guide)
+	if len(title) < 3 || guide == "" {
+		return nil, fmt.Errorf("%w: title minimal 3 karakter dan guide wajib diisi", response.ErrBadRequest)
+	}
+
+	pos, err := s.repo.NextPosition(ctx, cohortID)
+	if err != nil {
+		return nil, err
+	}
+
+	refs := req.References
+	if refs == nil {
+		refs = []string{}
+	}
+
+	m := &entity.Material{
+		CohortID:   cohortID,
+		Title:      title,
+		Guide:      guide,
+		References: refs,
+		Deadline:   toUTC(req.Deadline),
+		Position:   pos,
+	}
+	if err := s.repo.CreateMaterial(ctx, m); err != nil {
+		return nil, err
+	}
+
+	res := toMaterialResponse(m, nil, s.now())
+	s.rt.Broadcast(cohortRoom(cohortID), "material.created", res)
+	s.notifyDashboard(cohortID)
+	return &res, nil
+}
+
+func (s *materialService) UpdateMaterial(ctx context.Context, userID, cohortID, materialID uint, req dto.UpdateMaterialRequest) (*dto.MaterialResponse, error) {
+	if err := s.requireMentor(ctx, cohortID, userID); err != nil {
+		return nil, err
+	}
+
+	fields := map[string]any{}
+
+	if req.Title != nil {
+		t := strings.TrimSpace(*req.Title)
+		if len(t) < 3 {
+			return nil, fmt.Errorf("%w: title minimal 3 karakter", response.ErrBadRequest)
+		}
+		fields["title"] = t
+	}
+	if req.Guide != nil {
+		g := strings.TrimSpace(*req.Guide)
+		if g == "" {
+			return nil, fmt.Errorf("%w: guide tidak boleh kosong", response.ErrBadRequest)
+		}
+		fields["guide"] = g
+	}
+	if req.References != nil {
+		fields["references"] = req.References
+	}
+	if req.Deadline.Set {
+		if req.Deadline.Value == nil {
+			fields["deadline"] = nil // hapus deadline
+		} else {
+			fields["deadline"] = req.Deadline.Value.UTC()
+		}
+	}
+
+	if len(fields) == 0 {
+		return nil, fmt.Errorf("%w: tidak ada field yang diubah", response.ErrBadRequest)
+	}
+
+	if err := s.repo.UpdateMaterial(ctx, cohortID, materialID, fields); err != nil {
+		return nil, err
+	}
+
+	m, err := s.repo.GetMaterial(ctx, cohortID, materialID)
+	if err != nil {
+		return nil, err
+	}
+
+	res := toMaterialResponse(m, nil, s.now())
+	s.rt.Broadcast(cohortRoom(cohortID), "material.updated", res)
+	s.notifyDashboard(cohortID) // deadline berubah → jumlah terlambat bisa berubah
+	return &res, nil
+}
+
+func (s *materialService) DeleteMaterial(ctx context.Context, userID, cohortID, materialID uint) error {
+	if err := s.requireMentor(ctx, cohortID, userID); err != nil {
+		return err
+	}
+
+	if err := s.repo.DeleteMaterial(ctx, cohortID, materialID); err != nil {
+		return err
+	}
+
+	s.rt.Broadcast(cohortRoom(cohortID), "material.deleted", map[string]any{"id": materialID})
+	s.notifyDashboard(cohortID)
+	return nil
+}
+
+func (s *materialService) ReorderMaterials(ctx context.Context, userID, cohortID uint, req dto.ReorderMaterialsRequest) ([]dto.MaterialResponse, error) {
+	if err := s.requireMentor(ctx, cohortID, userID); err != nil {
+		return nil, err
+	}
+
+	if err := s.repo.ReorderMaterials(ctx, cohortID, req.MaterialIDs); err != nil {
+		return nil, err
+	}
+
+	materials, err := s.repo.ListMaterials(ctx, cohortID, "")
+	if err != nil {
+		return nil, err
+	}
+
+	now := s.now()
+	out := make([]dto.MaterialResponse, 0, len(materials))
+	for i := range materials {
+		out = append(out, toMaterialResponse(&materials[i], nil, now))
+	}
+
+	s.rt.Broadcast(cohortRoom(cohortID), "material.reordered", map[string]any{"material_ids": req.MaterialIDs})
+	return out, nil
+}
+
+func toUTC(t *time.Time) *time.Time {
+	if t == nil {
+		return nil
+	}
+	u := t.UTC()
+	return &u
 }
