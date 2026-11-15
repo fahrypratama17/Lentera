@@ -40,6 +40,8 @@ func Run() {
 		log.Error("db connect failed", "error", err)
 		os.Exit(1)
 	}
+	log.Info("db connected")
+
 	if err := database.Migrate(db); err != nil {
 		log.Error("migrate failed", "error", err)
 		os.Exit(1)
@@ -47,12 +49,13 @@ func Run() {
 	if err := database.Seed(db); err != nil {
 		log.Error("seed failed", "error", err)
 	}
+
 	rdb, err := cache.Connect(cfg.RedisAddr)
 	if err != nil {
 		log.Warn("redis unavailable, cache disabled", "error", err)
 		rdb = nil
 	}
-	_ = rdb // supaya bisa di-capture closure di bawah
+	_ = rdb // TODO: dipakai untuk cache materi/dashboard
 	hub := realtime.NewHub()
 
 	var uploader contract.FileUploader
@@ -85,9 +88,12 @@ func Run() {
 	userHandler.New(userService.New(userRepo.New(db), cfg.JWTSecret)).RegisterRoutes(api, auth)
 	cohortHandler.New(cohortService.New(cohortRepo.New(db))).RegisterRoutes(api, auth)
 
+now := func() time.Time { return time.Now().UTC() }
 	matRepo := materialRepo.New(db)
-	matSvc := materialService.NewWithUploader(matRepo, uploader, contract.NoopBroadcaster{}, func() time.Time { return time.Now().UTC() })
+	matSvc := materialService.NewWithUploader(matRepo, uploader, contract.NoopBroadcaster{}, now)
 	materialHandler.New(matSvc).RegisterRoutes(api, auth)
+	materialHandler.NewMonitoring(materialService.NewMonitoring(materialRepo.NewMonitoring(db), now)).RegisterRoutes(api, auth)
+	materialHandler.NewReview(materialService.NewReview(materialRepo.NewReview(db), contract.NoopBroadcaster{}, now)).RegisterRoutes(api, auth)
 	// TODO: modul baru -> tambah 1 baris di sini
 
 	api.GET("/ws", auth, hub.ServeWS)
