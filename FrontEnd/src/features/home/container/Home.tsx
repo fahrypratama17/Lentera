@@ -3,7 +3,7 @@ import { Hero } from "@/features/home/components/Hero";
 import { About } from "../components/AboutSection";
 import { Benefits } from "../components/BenefitSection";
 import { Cta } from "../components/CTASection";
-import { HowTo } from "../components/HowToSection";
+import { HowTo } from "../components/HowTo";
 import { Footer } from "@/shared/components/Footer/Footer";
 
 export default function Home() {
