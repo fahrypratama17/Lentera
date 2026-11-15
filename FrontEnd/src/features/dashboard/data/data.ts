@@ -80,7 +80,7 @@ export const mockCohorts: Cohort[] = [
     tone: "slate",
   },
   {
-    id: "data-science",
+    id: "data-science1",
     title: "Data Science Basics",
     description: "Python, analisis data, dan visualisasi.",
     mentorName: "Farhan Akbar",
@@ -93,7 +93,7 @@ export const mockCohorts: Cohort[] = [
     tone: "slate",
   },
   {
-    id: "data-science",
+    id: "data-science2",
     title: "Data Science Basics",
     description: "Python, analisis data, dan visualisasi.",
     mentorName: "Farhan Akbar",
@@ -106,7 +106,7 @@ export const mockCohorts: Cohort[] = [
     tone: "slate",
   },
   {
-    id: "data-science",
+    id: "data-science3",
     title: "Data Science Basics",
     description: "Python, analisis data, dan visualisasi.",
     mentorName: "Farhan Akbar",

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import DashboardShell from "@/shared/layout/DashboardShell";
 
 interface DashboardLayoutProps {
@@ -6,7 +6,11 @@ interface DashboardLayoutProps {
 }
 
 const layout = ({ children }: DashboardLayoutProps) => {
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <Suspense fallback={<>{children}</>}>
+      <DashboardShell>{children}</DashboardShell>
+    </Suspense>
+  );
 };
 
 export default layout;
