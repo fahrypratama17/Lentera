@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -34,6 +35,7 @@ import (
 func Run() {
 	cfg := config.Load()
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(log)
 
 	// ---- infra ----
 	db, err := database.Connect(cfg.DatabaseURL)
@@ -69,7 +71,10 @@ func Run() {
 	// ---- http ----
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(gin.Recovery(), middleware.Logger(log), middleware.Metrics(), middleware.CORS(cfg.CORSOrigin))
+
+	corsOrigins := strings.Split(cfg.CORSOrigin, ",")
+	log.Info("cors configured", "origins", corsOrigins)
+	r.Use(gin.Recovery(), middleware.Logger(log), middleware.Metrics(), middleware.CORS(corsOrigins))
 
 	r.GET("/health", func(c *gin.Context) {
 		sqlDB, err := db.DB()
