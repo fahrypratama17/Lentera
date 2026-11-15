@@ -12,6 +12,22 @@
   --color-secondary-text: #5a6574;
   --color-surface: #fafbfd;
   --color-background: #ffffff;
+
+  --color-foreground: #0A172B;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary-foreground: #FFFFFF;
+
+  --color-card: #FFFFFF;
+  --color-card-foreground: #0A172B;
+
+  --color-muted: #E6F3FB;
+  --color-muted-foreground: #5A6574;
+
+  --color-border: #DCE6ED;
+  --color-input: #DCE6ED;
+  --color-ring: #0D6684;
+
+  --color-destructive: #DC2626;
 }
 
 @layer utilities {
