@@ -3,7 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LayoutDashboard } from "lucide-react";
+import {
+  BookOpen,
+  ClipboardList,
+  LayoutDashboard,
+  LogOut,
+  UserRound,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -16,8 +22,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/shared/components/ui/sidebar";
+
+interface AppSidebarProps {
+  onLogout: () => void | Promise<void>;
+}
 
 const navigation = [
   {
@@ -27,58 +36,70 @@ const navigation = [
   },
   {
     title: "Kelas Saya",
-    href: "/dashboard#classes",
+    href: "/class",
     icon: BookOpen,
+  },
+  {
+    title: "Tugas",
+    href: "/tasks",
+    icon: ClipboardList,
+  },
+  {
+    title: "Profil",
+    href: "/profile",
+    icon: UserRound,
   },
 ];
 
-const AppSidebar = () => {
+const AppSidebar = ({ onLogout }: AppSidebarProps) => {
   const pathname = usePathname();
 
+  const isActiveRoute = (href: string) => {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="p-3">
+    <Sidebar collapsible="icon" className="border-border border-r">
+      <SidebarHeader className="border-border h-16 shrink-0 justify-center border-b px-3 py-0 group-data-[collapsible=icon]:px-1">
         <Link
           href="/dashboard"
-          className="flex items-center gap-3 rounded-xl px-2 py-2"
+          className="flex min-w-0 items-center gap-3 rounded-xl px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
         >
           <Image
             src="/logo.webp"
             alt="Logo StudyTrack"
-            width={34}
-            height={34}
-            className="size-8 shrink-0 object-contain"
+            width={38}
+            height={38}
+            className="size-9 shrink-0 object-contain"
           />
-
-          <span className="text-lg-bold text-primary truncate group-data-[collapsible=icon]:hidden">
+          <span className="text-primary truncate text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden">
             StudyTrack
           </span>
         </Link>
       </SidebarHeader>
 
-      <SidebarSeparator />
-
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
+      <SidebarContent className="pt-4">
+        <SidebarGroup className="px-3">
+          <SidebarGroupLabel className="text-secondary-text mb-2 h-8 px-3 text-sm font-semibold group-data-[collapsible=icon]:hidden">
+            Menu Utama
+          </SidebarGroupLabel>
 
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1.5 group-data-[collapsible=icon]:gap-4">
               {navigation.map((item) => {
                 const Icon = item.icon;
-                const isActive =
-                  pathname === "/dashboard" && item.href === "/dashboard";
+                const isActive = isActiveRoute(item.href);
 
                 return (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       render={<Link href={item.href} />}
                       tooltip={item.title}
                       isActive={isActive}
-                      className="text-sm-semibold h-10 rounded-lg px-3"
+                      className="text-primary-text hover:bg-secondary-light hover:text-primary data-[active=true]:bg-secondary-light data-[active=true]:text-primary h-12 rounded-xl px-3 text-base font-medium transition-colors data-[active=true]:font-semibold"
                     >
-                      <Icon className="size-4" />
-                      <span>{item.title}</span>
+                      <Icon className="size-5! shrink-0" />
+                      <span className="truncate">{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -88,14 +109,20 @@ const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-3">
-        <div className="bg-secondary-light rounded-xl p-3 group-data-[collapsible=icon]:hidden">
-          <p className="text-sm-bold text-primary">StudyTrack</p>
-
-          <p className="text-secondary-text mt-1 text-xs">
-            Belajar dan berkembang bersama.
-          </p>
-        </div>
+      <SidebarFooter className="border-border gap-3 border-t p-3">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              type="button"
+              tooltip="Keluar"
+              onClick={() => void onLogout()}
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive h-12 cursor-pointer rounded-xl px-3 text-base font-semibold"
+            >
+              <LogOut className="size-5! shrink-0" />
+              <span className="truncate">Keluar</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );
