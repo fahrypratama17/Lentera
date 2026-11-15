@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { STEPS, VARIANTS } from "../data/data";
 import { cn } from "cn";
-import { useHowToAnimation } from "@/features/home/data/useHowTo";
+import { useHowToAnimation } from "@/features/home/hooks/useHowTo";
 
 export function HowTo() {
   const { sectionRef } = useHowToAnimation();
