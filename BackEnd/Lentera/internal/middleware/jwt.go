@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Auth validasi JWT, set "uid" & "role" ke context. Token WS boleh lewat ?token=.
 func Auth(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tok := strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")

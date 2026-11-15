@@ -5,7 +5,6 @@ import (
 
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/contract"
 	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/internal/app/user/entity"
-	"github.com/fahrypratama17/Lentera/BackEnd/Lentera/pkg/response"
 
 	"gorm.io/gorm"
 )
@@ -19,16 +18,21 @@ func New(db *gorm.DB) contract.UserRepository {
 }
 
 func (r *repository) Create(ctx context.Context, u *entity.User) error {
-	// TODO: return r.db.WithContext(ctx).Create(u).Error  (duplikat email -> gorm.ErrDuplicatedKey)
-	return response.ErrNotImplemented
+	return r.db.WithContext(ctx).Create(u).Error
 }
 
 func (r *repository) FindByID(ctx context.Context, id uint) (*entity.User, error) {
-	// TODO
-	return nil, response.ErrNotImplemented
+	var u entity.User
+	if err := r.db.WithContext(ctx).First(&u, id).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
 
 func (r *repository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
-	// TODO: Where("email = ?", email).First(&u)
-	return nil, response.ErrNotImplemented
+	var u entity.User
+	if err := r.db.WithContext(ctx).Where("email = ?", email).First(&u).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
